@@ -1,0 +1,148 @@
+{
+  "transactions": [
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T02:58:05.425",
+      "transactionDate": "2025-02-11T02:58:05.425",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    },
+    {
+      "transactionId": null,
+      "userId": "u1",
+      "accountId": "acc1",
+      "transactionType": "EXPENSE",
+      "transactionCategory": "GROCERY",
+      "transactionAmount": 150.0,
+      "createdAt": "2025-02-11T23:51:54.423",
+      "transactionDate": "2025-02-11T23:51:54.423",
+      "description": "Grocery shopping at Walmart",
+      "to": "Walmart"
+    }
+  ]
+}

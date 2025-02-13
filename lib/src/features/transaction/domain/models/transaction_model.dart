@@ -1,18 +1,38 @@
-class Transaction {
-  final String? transactionId;
-  final String userId;
+import 'package:json_annotation/json_annotation.dart';
+
+part 'transaction_model.g.dart';
+
+@JsonSerializable()
+class TransactionModel {
+  @JsonKey(name: 'transactionId')
+  final String transactionId;
+
+  @JsonKey(name: 'accountId')
   final String accountId;
+
+  @JsonKey(name: 'transactionType')
   final String transactionType;
+
+  @JsonKey(name: 'transactionCategory')
   final String transactionCategory;
+
+  @JsonKey(name: 'transactionAmount')
   final double transactionAmount;
+
+  @JsonKey(name: 'createdAt')
   final DateTime createdAt;
+
+  @JsonKey(name: 'transactionDate')
   final DateTime transactionDate;
+
+  @JsonKey(name: 'description')
   final String description;
+
+  @JsonKey(name: 'to')
   final String to;
 
-  Transaction({
-    this.transactionId,
-    required this.userId,
+  const TransactionModel({
+    required this.transactionId,
     required this.accountId,
     required this.transactionType,
     required this.transactionCategory,
@@ -23,18 +43,8 @@ class Transaction {
     required this.to,
   });
 
-  factory Transaction.fromJson(Map<String, dynamic> json) {
-    return Transaction(
-      transactionId: json['transactionId'],
-      userId: json['userId'],
-      accountId: json['accountId'],
-      transactionType: json['transactionType'],
-      transactionCategory: json['transactionCategory'],
-      transactionAmount: json['transactionAmount'].toDouble(),
-      createdAt: DateTime.parse(json['createdAt']),
-      transactionDate: DateTime.parse(json['transactionDate']),
-      description: json['description'],
-      to: json['to'],
-    );
-  }
+  factory TransactionModel.fromJson(Map<String, dynamic> json) =>
+      _$TransactionModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TransactionModelToJson(this);
 }

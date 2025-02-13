@@ -5,7 +5,7 @@ import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_table_provider.dart';
 
 class TransactionTable extends StatelessWidget {
-  final List<Transaction> transactions;
+  final List<TransactionModel> transactions;
 
   const TransactionTable({
     Key? key,
@@ -49,10 +49,10 @@ class _TransactionTableView extends StatelessWidget {
                       },
                     ),
                     DataColumn(
-                      label: const Text('From'),
+                      label: const Text('Account'),
                       onSort: (columnIndex, _) {
                         provider.sort<String>(
-                          (transaction) => transaction.userId,
+                          (transaction) => transaction.accountId,
                           columnIndex,
                         );
                       },
@@ -94,7 +94,7 @@ class _TransactionTableView extends StatelessWidget {
                       },
                     ),
                     DataColumn(
-                      label: const Text('Note'),
+                      label: const Text('Description'),
                       onSort: (columnIndex, _) {
                         provider.sort<String>(
                           (transaction) => transaction.description,

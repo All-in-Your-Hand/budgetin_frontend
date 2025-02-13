@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../../domain/models/transaction_model.dart';
 
 class TransactionTableProvider extends ChangeNotifier {
-  List<Transaction> _allTransactions = [];
-  List<Transaction> _filteredTransactions = [];
-  List<Transaction> get transactions => _filteredTransactions;
+  List<TransactionModel> _allTransactions = [];
+  List<TransactionModel> _filteredTransactions = [];
+  List<TransactionModel> get transactions => _filteredTransactions;
 
   int? _sortColumnIndex;
   int? get sortColumnIndex => _sortColumnIndex;
@@ -31,7 +31,7 @@ class TransactionTableProvider extends ChangeNotifier {
   List<String> get transactionTypes =>
       _allTransactions.map((t) => t.transactionType).toSet().toList()..sort();
 
-  void initializeTransactions(List<Transaction> transactions) {
+  void initializeTransactions(List<TransactionModel> transactions) {
     _allTransactions = List.from(transactions);
     _filteredTransactions = List.from(transactions);
     _updateMaxAmount();
@@ -108,9 +108,9 @@ class TransactionTableProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Comparable<dynamic> Function(Transaction)? _currentSortField;
+  Comparable<dynamic> Function(TransactionModel)? _currentSortField;
 
-  void sort<T>(Comparable<T> Function(Transaction transaction) getField,
+  void sort<T>(Comparable<T> Function(TransactionModel transaction) getField,
       int columnIndex) {
     _currentSortField = getField;
     _sortAscending = _sortColumnIndex == columnIndex ? !_sortAscending : true;

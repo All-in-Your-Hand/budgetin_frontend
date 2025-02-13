@@ -1,21 +1,37 @@
 import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
-import 'providers/transaction_table_provider.dart';
+import '../data/data_sources/remote/transaction_remote_data_source.dart';
+import '../data/repositories/transaction_repository_impl.dart';
+import '../domain/repositories/transaction_repository.dart';
+import 'providers/transaction_provider.dart';
+
+final getIt = GetIt.instance;
 
 void initTransactionInjections() {
-  final getIt = GetIt.instance;
+  // Data sources
+  getIt.registerLazySingleton<TransactionRemoteDataSource>(
+    () => TransactionRemoteDataSourceImpl(dio: getIt<Dio>()),
+  );
 
-  // Register providers
-  getIt.registerFactory<TransactionTableProvider>(
-      () => TransactionTableProvider());
+  // Repositories
+  getIt.registerLazySingleton<TransactionRepository>(
+    () => TransactionRepositoryImpl(
+        remoteDataSource: getIt<TransactionRemoteDataSource>()),
+  );
+
+  // Providers
+  getIt.registerFactory(
+    () => TransactionProvider(repository: getIt<TransactionRepository>()),
+  );
 }
 
 List<ChangeNotifierProvider> getTransactionProviders() {
   final getIt = GetIt.instance;
 
   return [
-    ChangeNotifierProvider<TransactionTableProvider>(
-      create: (_) => getIt<TransactionTableProvider>(),
+    ChangeNotifierProvider<TransactionProvider>(
+      create: (_) => getIt<TransactionProvider>(),
     ),
   ];
 }

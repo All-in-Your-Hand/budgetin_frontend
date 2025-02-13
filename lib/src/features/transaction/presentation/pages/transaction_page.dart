@@ -1,7 +1,7 @@
-import 'dart:convert';
+import 'package:budgetin_frontend/src/core/utils/constant/network_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import '../../domain/models/transaction_model.dart';
+import 'package:provider/provider.dart';
+import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -12,33 +12,15 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
-  List<Transaction> _transactions = [];
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadTransactions();
-  }
-
-  Future<void> _loadTransactions() async {
-    try {
-      final String response =
-          await rootBundle.loadString('assets/mock_data.json');
-      final data = await json.decode(response);
-
-      setState(() {
-        _transactions = (data['transactions'] as List)
-            .map((json) => Transaction.fromJson(json))
-            .toList();
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      debugPrint('Error loading transactions: $e');
-    }
+    // TODO: Replace with actual userId from auth state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<TransactionProvider>()
+          .fetchTransactions(NetworkConstants.testUserId);
+    });
   }
 
   @override
@@ -47,12 +29,40 @@ class _TransactionPageState extends State<TransactionPage> {
       appBar: AppBar(
         title: const Text('Transactions'),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TransactionTable(transactions: _transactions),
-            ),
+      body: Consumer<TransactionProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Error: ${provider.error}',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      provider.fetchTransactions('67ad2cd59bd7312e431e1444');
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TransactionTable(transactions: provider.transactions),
+          );
+        },
+      ),
     );
   }
 }

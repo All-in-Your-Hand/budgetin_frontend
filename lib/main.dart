@@ -1,19 +1,25 @@
-import 'package:budgetin_frontend/src/features/authentication/presentation/providers/auth_provider.dart';
-import 'package:budgetin_frontend/src/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:flutter/material.dart';
-import 'src/features/authentication/auth_injections.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
+import 'src/core/utils/injections.dart';
+import 'src/features/authentication/presentation/providers/auth_provider.dart';
+import 'src/features/transaction/presentation/pages/transaction_page.dart';
+import 'src/features/transaction/presentation/providers/transaction_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  setupAuthInjections();
+
+  // Initialize all injections
+  initInjections();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (_) => GetIt.instance<AuthProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => GetIt.instance<TransactionProvider>(),
         ),
       ],
       child: const MyApp(),

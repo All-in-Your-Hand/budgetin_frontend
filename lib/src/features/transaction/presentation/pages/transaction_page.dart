@@ -4,7 +4,13 @@ import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
 
+/// A page that displays a list of user transactions.
+///
+/// This page automatically fetches and displays transactions for the current user.
+/// It handles loading states and error states appropriately, providing feedback
+/// to the user about the current state of the data.
 class TransactionPage extends StatefulWidget {
+  /// Creates a new instance of [TransactionPage].
   const TransactionPage({Key? key}) : super(key: key);
 
   @override
@@ -15,6 +21,13 @@ class _TransactionPageState extends State<TransactionPage> {
   @override
   void initState() {
     super.initState();
+    _fetchTransactions();
+  }
+
+  /// Initiates the transaction fetching process.
+  ///
+  /// This method is called after the widget is inserted into the widget tree.
+  void _fetchTransactions() {
     // TODO: Replace with actual userId from auth state
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
@@ -32,7 +45,9 @@ class _TransactionPageState extends State<TransactionPage> {
       body: Consumer<TransactionProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (provider.error != null) {
@@ -47,9 +62,7 @@ class _TransactionPageState extends State<TransactionPage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
-                      provider.fetchTransactions('67ad2cd59bd7312e431e1444');
-                    },
+                    onPressed: () => _fetchTransactions(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -59,7 +72,9 @@ class _TransactionPageState extends State<TransactionPage> {
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TransactionTable(transactions: provider.transactions),
+            child: TransactionTable(
+              transactions: provider.transactions,
+            ),
           );
         },
       ),

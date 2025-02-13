@@ -4,9 +4,18 @@ import 'package:provider/provider.dart';
 import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_table_provider.dart';
 
+/// A widget that displays transaction data in a sortable and filterable table format.
+///
+/// This widget takes a list of [TransactionModel] objects and presents them in a
+/// data table with sorting capabilities for each column and filtering options.
+/// It uses a separate provider ([TransactionTableProvider]) to manage the table state.
 class TransactionTable extends StatelessWidget {
+  /// The list of transactions to display in the table.
   final List<TransactionModel> transactions;
 
+  /// Creates a new instance of [TransactionTable].
+  ///
+  /// The [transactions] parameter is required and must not be null.
   const TransactionTable({
     Key? key,
     required this.transactions,
@@ -22,6 +31,10 @@ class TransactionTable extends StatelessWidget {
   }
 }
 
+/// The internal implementation of the transaction table view.
+///
+/// This widget is responsible for rendering the actual table and filter UI.
+/// It's private because it's an implementation detail of [TransactionTable].
 class _TransactionTableView extends StatelessWidget {
   const _TransactionTableView({Key? key}) : super(key: key);
 
@@ -38,87 +51,8 @@ class _TransactionTableView extends StatelessWidget {
                 child: DataTable(
                   sortColumnIndex: provider.sortColumnIndex,
                   sortAscending: provider.sortAscending,
-                  columns: [
-                    DataColumn(
-                      label: const Text('Date'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<DateTime>(
-                          (transaction) => transaction.transactionDate,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Account'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<String>(
-                          (transaction) => transaction.accountId,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('To'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<String>(
-                          (transaction) => transaction.to,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Amount'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<num>(
-                          (transaction) => transaction.transactionAmount,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Category'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<String>(
-                          (transaction) => transaction.transactionCategory,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Type'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<String>(
-                          (transaction) => transaction.transactionType,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                    DataColumn(
-                      label: const Text('Description'),
-                      onSort: (columnIndex, _) {
-                        provider.sort<String>(
-                          (transaction) => transaction.description,
-                          columnIndex,
-                        );
-                      },
-                    ),
-                  ],
-                  rows: provider.transactions.map((transaction) {
-                    final dateFormat = DateFormat('dd/MM/yyyy');
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(
-                            dateFormat.format(transaction.transactionDate))),
-                        DataCell(Text(transaction.accountId)),
-                        DataCell(Text(transaction.to)),
-                        DataCell(Text(
-                            '\$${transaction.transactionAmount.toStringAsFixed(2)}')),
-                        DataCell(Text(transaction.transactionCategory)),
-                        DataCell(Text(transaction.transactionType)),
-                        DataCell(Text(transaction.description)),
-                      ],
-                    );
-                  }).toList(),
+                  columns: _buildColumns(provider),
+                  rows: _buildRows(provider),
                 ),
               ),
             ),
@@ -126,6 +60,80 @@ class _TransactionTableView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Builds the column definitions for the data table.
+  List<DataColumn> _buildColumns(TransactionTableProvider provider) {
+    return [
+      _buildSortableColumn<DateTime>(
+        'Date',
+        provider,
+        (transaction) => transaction.transactionDate,
+      ),
+      _buildSortableColumn<String>(
+        'Account',
+        provider,
+        (transaction) => transaction.accountId,
+      ),
+      _buildSortableColumn<String>(
+        'To',
+        provider,
+        (transaction) => transaction.to,
+      ),
+      _buildSortableColumn<num>(
+        'Amount',
+        provider,
+        (transaction) => transaction.transactionAmount,
+      ),
+      _buildSortableColumn<String>(
+        'Category',
+        provider,
+        (transaction) => transaction.transactionCategory,
+      ),
+      _buildSortableColumn<String>(
+        'Type',
+        provider,
+        (transaction) => transaction.transactionType,
+      ),
+      _buildSortableColumn<String>(
+        'Description',
+        provider,
+        (transaction) => transaction.description,
+      ),
+    ];
+  }
+
+  /// Creates a sortable column with the given parameters.
+  DataColumn _buildSortableColumn<T extends Comparable<T>>(
+    String label,
+    TransactionTableProvider provider,
+    T Function(TransactionModel) selector,
+  ) {
+    return DataColumn(
+      label: Text(label),
+      onSort: (columnIndex, _) {
+        provider.sort<T>(selector, columnIndex);
+      },
+    );
+  }
+
+  /// Builds the data rows for the table.
+  List<DataRow> _buildRows(TransactionTableProvider provider) {
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    return provider.transactions.map((transaction) {
+      return DataRow(
+        cells: [
+          DataCell(Text(dateFormat.format(transaction.transactionDate))),
+          DataCell(Text(transaction.accountId)),
+          DataCell(Text(transaction.to)),
+          DataCell(
+              Text('\$${transaction.transactionAmount.toStringAsFixed(2)}')),
+          DataCell(Text(transaction.transactionCategory)),
+          DataCell(Text(transaction.transactionType)),
+          DataCell(Text(transaction.description)),
+        ],
+      );
+    }).toList();
   }
 
   Widget _buildFilters(

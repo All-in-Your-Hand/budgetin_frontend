@@ -4,8 +4,11 @@ part 'transaction_model.g.dart';
 
 @JsonSerializable()
 class TransactionModel {
-  @JsonKey(name: 'transactionId')
+  @JsonKey(name: 'id')
   final String transactionId;
+
+  @JsonKey(name: 'userId')
+  final String userId;
 
   @JsonKey(name: 'accountId')
   final String accountId;
@@ -33,6 +36,7 @@ class TransactionModel {
 
   const TransactionModel({
     required this.transactionId,
+    required this.userId,
     required this.accountId,
     required this.transactionType,
     required this.transactionCategory,

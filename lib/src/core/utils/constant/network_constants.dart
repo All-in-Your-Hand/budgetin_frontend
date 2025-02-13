@@ -4,7 +4,7 @@ class NetworkConstants {
 
   /// Base URL for the API
   static const String baseUrl = 'http://localhost:8080/api';
-  static const String testUserId = '67ad2cd59bd7312e431e1444';
+  static const String testUserId = '67ae2503e5e5011138700cd3';
 
   /// API version
   static const String apiVersion = 'v0';

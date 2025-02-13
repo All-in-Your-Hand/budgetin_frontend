@@ -1,5 +1,8 @@
 import 'package:budgetin_frontend/src/core/utils/constant/network_constants.dart';
+// TODO: Implement proper logging with app_logger
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
@@ -28,7 +31,6 @@ class _TransactionPageState extends State<TransactionPage> {
   ///
   /// This method is called after the widget is inserted into the widget tree.
   void _fetchTransactions() {
-    // TODO: Replace with actual userId from auth state
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
           .read<TransactionProvider>()
@@ -36,47 +38,314 @@ class _TransactionPageState extends State<TransactionPage> {
     });
   }
 
+  /// Shows the dialog for adding a new transaction.
+  ///
+  /// This method handles the UI for transaction creation, delegating the actual
+  /// data processing to the [TransactionProvider].
+  void _showAddTransactionDialog() {
+    final formKey = GlobalKey<FormState>();
+    final dateController = TextEditingController(
+      text: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+    );
+    final toController = TextEditingController();
+    final categoryController = TextEditingController();
+    final accountController = TextEditingController();
+    final amountController = TextEditingController();
+    final typeController = TextEditingController();
+    final notesController = TextEditingController();
+
+    // Mock accounts for demonstration
+    const mockAccounts = [
+      'BNP Paribas',
+      'Chase Bank',
+      'Revolut',
+      'N26',
+      'Wise',
+    ];
+
+    // Temporary Transaction categories // TODO: Replace with actual categories
+    const categories = [
+      'HOUSING',
+      'GROCERY',
+      'TRANSPORTATION',
+      'HEALTHCARE',
+      'DINING',
+      'SALARY',
+      'OTHER',
+    ];
+
+    // Transaction types
+    const transactionTypes = [
+      'Expense',
+      'Income',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return Dialog(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              ),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Add Transaction',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        semanticsLabel: 'Add Transaction Form Title',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Date *',
+                          border: OutlineInputBorder(),
+                          suffixIcon: Icon(Icons.calendar_today),
+                        ),
+                        controller: dateController,
+                        readOnly: true,
+                        validator: (value) => context
+                            .read<TransactionProvider>()
+                            .validateDate(value),
+                        onTap: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate:
+                                DateTime.now().add(const Duration(days: 365)),
+                          );
+                          if (picked != null) {
+                            dateController.text =
+                                DateFormat('dd/MM/yyyy').format(picked);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'To (Optional)',
+                          border: OutlineInputBorder(),
+                        ),
+                        controller: toController,
+                        maxLength: 30,
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Category *',
+                          border: OutlineInputBorder(),
+                        ),
+                        value: categoryController.text.isEmpty
+                            ? null
+                            : categoryController.text,
+                        items: categories.map((String category) {
+                          return DropdownMenuItem<String>(
+                            value: category,
+                            child: Text(category),
+                          );
+                        }).toList(),
+                        validator: (value) => context
+                            .read<TransactionProvider>()
+                            .validateCategory(value),
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            categoryController.text = value;
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              decoration: const InputDecoration(
+                                labelText: 'From Account *',
+                                border: OutlineInputBorder(),
+                              ),
+                              value: accountController.text.isEmpty
+                                  ? null
+                                  : accountController.text,
+                              items: mockAccounts.map((String account) {
+                                return DropdownMenuItem<String>(
+                                  value: account,
+                                  child: Text(account),
+                                );
+                              }).toList(),
+                              validator: (value) => context
+                                  .read<TransactionProvider>()
+                                  .validateAccount(value),
+                              onChanged: (String? value) {
+                                if (value != null) {
+                                  accountController.text = value;
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          SizedBox(
+                            width: 120,
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Amount *',
+                                border: OutlineInputBorder(),
+                                prefixText: '€ ',
+                              ),
+                              controller: amountController,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}')),
+                              ],
+                              validator: (value) => context
+                                  .read<TransactionProvider>()
+                                  .validateAmount(value),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Transaction Type *',
+                          border: OutlineInputBorder(),
+                        ),
+                        value: typeController.text.isEmpty
+                            ? null
+                            : typeController.text,
+                        items: transactionTypes.map((String type) {
+                          return DropdownMenuItem<String>(
+                            value: type,
+                            child: Text(type),
+                          );
+                        }).toList(),
+                        validator: (value) => context
+                            .read<TransactionProvider>()
+                            .validateTransactionType(value),
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            typeController.text = value;
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'Notes (Optional)',
+                          border: OutlineInputBorder(),
+                          counterText: '',
+                        ),
+                        controller: notesController,
+                        maxLines: 3,
+                        maxLength: 150,
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                final provider =
+                                    context.read<TransactionProvider>();
+                                provider.addTransaction(
+                                  date: dateController.text,
+                                  to: toController.text,
+                                  category: categoryController.text,
+                                  account: accountController.text,
+                                  amount: amountController.text,
+                                  type: typeController.text,
+                                  notes: notesController.text,
+                                );
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: const Text('Add Transaction'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transactions'),
+        title: const Text(
+          'Transactions',
+          semanticsLabel: 'Transactions Page Title',
+        ),
       ),
-      body: Consumer<TransactionProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Consumer<TransactionProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-          if (provider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${provider.error}',
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
+              if (provider.error != null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Error: ${provider.error}',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _fetchTransactions(),
+                        child: const Text('Retry'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => _fetchTransactions(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TransactionTable(
-              transactions: provider.transactions,
-            ),
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TransactionTable(
+                  transactions: provider.transactions,
+                ),
+              );
+            },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddTransactionDialog,
+        tooltip: 'Add new transaction',
+        child: const Icon(Icons.add),
       ),
     );
   }

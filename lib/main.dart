@@ -5,6 +5,7 @@ import 'src/core/utils/injections.dart';
 import 'src/features/authentication/presentation/providers/auth_provider.dart';
 import 'src/features/transaction/presentation/pages/transaction_page.dart';
 import 'src/features/transaction/presentation/providers/transaction_provider.dart';
+import 'src/features/account/presentation/providers/account_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => GetIt.instance<TransactionProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => GetIt.instance<AccountProvider>(),
         ),
       ],
       child: const MyApp(),

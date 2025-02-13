@@ -5,6 +5,7 @@ import '../data/data_sources/remote/transaction_remote_data_source.dart';
 import '../data/repositories/transaction_repository_impl.dart';
 import '../domain/repositories/transaction_repository.dart';
 import 'providers/transaction_provider.dart';
+import '../../account/presentation/providers/account_provider.dart';
 
 final getIt = GetIt.instance;
 
@@ -32,6 +33,9 @@ List<ChangeNotifierProvider> getTransactionProviders() {
   return [
     ChangeNotifierProvider<TransactionProvider>(
       create: (_) => getIt<TransactionProvider>(),
+    ),
+    ChangeNotifierProvider<AccountProvider>(
+      create: (_) => getIt<AccountProvider>(),
     ),
   ];
 }

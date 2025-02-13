@@ -4,7 +4,8 @@ class NetworkConstants {
 
   /// Base URL for the API
   static const String baseUrl = 'http://localhost:8080/api';
-  static const String testUserId = '67ae2503e5e5011138700cd3';
+  static const String testUserId = '67ae65bd8e43eb19a8593a81';
+  static const String testAccountId = '67ae65db8e43eb19a8593a82';
 
   /// API version
   static const String apiVersion = 'v0';
@@ -21,6 +22,10 @@ class NetworkConstants {
   static const String transactionEndpoint = '$apiUrl/transactions';
   static const String userEndpoint = '$apiUrl/users';
   static const String accountEndpoint = '$apiUrl/accounts';
+
+  /// Account endpoints
+  static String getAccountByIdAndUserId() =>
+      '$accountEndpoint?accountId=$testAccountId&userId=$testUserId';
 
   /// Transaction endpoints
   static String getTransactionsByUserId(String userId) =>

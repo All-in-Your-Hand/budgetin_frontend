@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
+// import '../../../account/presentation/providers/account_provider.dart';
 
 /// A page that displays a list of user transactions.
 ///
@@ -53,15 +54,6 @@ class _TransactionPageState extends State<TransactionPage> {
     final amountController = TextEditingController();
     final typeController = TextEditingController();
     final notesController = TextEditingController();
-
-    // Mock accounts for demonstration
-    const mockAccounts = [
-      'BNP Paribas',
-      'Chase Bank',
-      'Revolut',
-      'N26',
-      'Wise',
-    ];
 
     // Temporary Transaction categories // TODO: Replace with actual categories
     const categories = [
@@ -166,56 +158,47 @@ class _TransactionPageState extends State<TransactionPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              decoration: const InputDecoration(
-                                labelText: 'From Account *',
-                                border: OutlineInputBorder(),
-                              ),
-                              value: accountController.text.isEmpty
-                                  ? null
-                                  : accountController.text,
-                              items: mockAccounts.map((String account) {
-                                return DropdownMenuItem<String>(
-                                  value: account,
-                                  child: Text(account),
-                                );
-                              }).toList(),
-                              validator: (value) => context
-                                  .read<TransactionProvider>()
-                                  .validateAccount(value),
-                              onChanged: (String? value) {
-                                if (value != null) {
-                                  accountController.text = value;
-                                }
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          SizedBox(
-                            width: 120,
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'Amount *',
-                                border: OutlineInputBorder(),
-                                prefixText: '€ ',
-                              ),
-                              controller: amountController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'^\d*\.?\d{0,2}')),
-                              ],
-                              validator: (value) => context
-                                  .read<TransactionProvider>()
-                                  .validateAmount(value),
-                            ),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'From Account *',
+                          border: OutlineInputBorder(),
+                        ),
+                        value: accountController.text.isEmpty
+                            ? null
+                            : accountController.text,
+                        items: const [
+                          DropdownMenuItem<String>(
+                            value: NetworkConstants.testAccountId,
+                            child: Text(
+                                'Account (${NetworkConstants.testAccountId})'),
                           ),
                         ],
+                        validator: (value) => context
+                            .read<TransactionProvider>()
+                            .validateAccount(value),
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            accountController.text = value;
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Amount *',
+                          border: OutlineInputBorder(),
+                          prefixText: '€ ',
+                        ),
+                        controller: amountController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,2}')),
+                        ],
+                        validator: (value) => context
+                            .read<TransactionProvider>()
+                            .validateAmount(value),
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(

@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/models/transaction_model.dart';
+import 'transaction_model.dart';
 
 part 'transaction_response.g.dart';
 

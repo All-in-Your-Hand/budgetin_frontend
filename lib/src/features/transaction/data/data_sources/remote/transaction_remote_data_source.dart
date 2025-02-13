@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 import '../../../../../core/network/error/network_exception.dart';
 import '../../../../../core/utils/constant/network_constants.dart';
 import '../../../domain/models/transaction_response.dart';
+import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 
 abstract class TransactionRemoteDataSource {
   Future<TransactionResponse> getTransactions(String userId);
+  Future<String> addTransaction(TransactionRequest request);
 }
 
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
@@ -34,6 +36,23 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
         message: e.message ?? 'Failed to fetch transactions',
         statusCode: e.response?.statusCode,
       );
+    }
+  }
+
+  @override
+  Future<String> addTransaction(TransactionRequest request) async {
+    try {
+      print('Sending transaction request: ${request.toJson()}'); // Debug log
+      final response = await dio.post(
+        NetworkConstants.transactionEndpoint,
+        data: request.toJson(),
+      );
+      print('Server response: ${response.data}'); // Debug log
+
+      return response.data['message'] as String;
+    } catch (e) {
+      print('Error in addTransaction: $e'); // Debug log
+      rethrow;
     }
   }
 }

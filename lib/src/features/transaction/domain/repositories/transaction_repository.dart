@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/network/error/network_exception.dart';
 import '../models/transaction_model.dart';
+import 'package:budgetin_frontend/src/core/network/error/failures.dart';
+import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 
 /// Repository interface for handling transaction-related operations
 ///
@@ -17,4 +19,6 @@ abstract class TransactionRepository {
   ///   - Right: List of [TransactionModel] if successful
   Future<Either<NetworkException, List<TransactionModel>>> getTransactions(
       String userId);
+
+  Future<Either<Failure, String>> addTransaction(TransactionRequest request);
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../../domain/models/transaction_model.dart';
 import '../../domain/repositories/transaction_repository.dart';
+import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
+import 'package:budgetin_frontend/src/features/transaction/domain/usecases/add_transaction_usecase.dart';
 
 /// Provider class that manages the state of transactions in the application.
 ///
@@ -9,6 +11,7 @@ import '../../domain/repositories/transaction_repository.dart';
 /// [TransactionRepository] to fetch transaction data.
 class TransactionProvider extends ChangeNotifier {
   final TransactionRepository _repository;
+  final AddTransactionUseCase _addTransactionUseCase;
 
   List<TransactionModel> _transactions = [];
   bool _isLoading = false;
@@ -19,7 +22,9 @@ class TransactionProvider extends ChangeNotifier {
   /// Requires a [TransactionRepository] instance to handle data operations.
   TransactionProvider({
     required TransactionRepository repository,
-  }) : _repository = repository;
+    required AddTransactionUseCase addTransactionUseCase,
+  })  : _repository = repository,
+        _addTransactionUseCase = addTransactionUseCase;
 
   /// The current list of transactions.
   ///
@@ -108,54 +113,26 @@ class TransactionProvider extends ChangeNotifier {
   ///   - notes: Additional notes about the transaction (optional)
   ///
   /// Returns a Future that completes when the transaction is added.
-  Future<void> addTransaction({
-    required String date,
-    String? to,
-    required String category,
-    required String account,
-    required String amount,
-    required String type,
-    String? notes,
-  }) async {
-    try {
-      _isLoading = true;
-      notifyListeners();
+  Future<bool> addTransaction(TransactionRequest request) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
 
-      // TODO: Implement the actual transaction addition logic with the repository
-      // This is a placeholder that just adds to the local list for now
-      final newTransaction = TransactionModel(
-        transactionId: DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: 'current_user', // TODO: Get from auth
-        accountId: account,
-        transactionType: type,
-        transactionCategory: category,
-        transactionAmount: double.parse(amount),
-        createdAt: DateTime.now(),
-        transactionDate: DateTime.parse(date.split('/').reversed.join('-')),
-        description: notes ?? '',
-        to: to ?? '',
-      );
+    final result = await _addTransactionUseCase(request);
 
-      // TODO: Replace with proper logging
-      print('Adding new transaction: ${newTransaction.transactionId}');
-      print('Date: $date');
-      print('To: $to');
-      print('Category: $category');
-      print('Account: $account');
-      print('Amount: $amount');
-      print('Type: $type');
-      print('Notes: $notes');
-
-      _transactions.add(newTransaction);
-      _error = null;
-    } catch (e) {
-      _error = 'Failed to add transaction: ${e.toString()}';
-      // TODO: Replace with proper logging
-      print('Error adding transaction: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    return result.fold(
+      (failure) {
+        _error = failure.message;
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      },
+      (success) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      },
+    );
   }
 
   /// Fetches transactions for the specified user.

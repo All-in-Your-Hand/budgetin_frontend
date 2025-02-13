@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
+import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 // import '../../../account/presentation/providers/account_provider.dart';
 
 /// A page that displays a list of user transactions.
@@ -111,14 +112,23 @@ class _TransactionPageState extends State<TransactionPage> {
                             .read<TransactionProvider>()
                             .validateDate(value),
                         onTap: () async {
+                          // Parse current date to get initial date
+                          final currentParts = dateController.text.split('/');
+                          final currentDate = DateTime(
+                            int.parse(currentParts[2]), // year
+                            int.parse(currentParts[1]), // month
+                            int.parse(currentParts[0]), // day
+                          );
+
                           final DateTime? picked = await showDatePicker(
                             context: context,
-                            initialDate: DateTime.now(),
+                            initialDate: currentDate,
                             firstDate: DateTime(2000),
                             lastDate:
                                 DateTime.now().add(const Duration(days: 365)),
                           );
                           if (picked != null) {
+                            // Update only the date part, keeping the current time
                             dateController.text =
                                 DateFormat('dd/MM/yyyy').format(picked);
                           }
@@ -245,20 +255,66 @@ class _TransactionPageState extends State<TransactionPage> {
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (formKey.currentState!.validate()) {
                                 final provider =
                                     context.read<TransactionProvider>();
-                                provider.addTransaction(
-                                  date: dateController.text,
-                                  to: toController.text,
-                                  category: categoryController.text,
-                                  account: accountController.text,
-                                  amount: amountController.text,
-                                  type: typeController.text,
-                                  notes: notesController.text,
+
+                                // Parse the date from dd/MM/yyyy to DateTime
+                                final dateParts =
+                                    dateController.text.split('/');
+                                final selectedDate = DateTime(
+                                  int.parse(dateParts[2]), // year
+                                  int.parse(dateParts[1]), // month
+                                  int.parse(dateParts[0]), // day
+                                  0, // hour
+                                  0, // minute
+                                  0, // second
+                                  0, // millisecond
                                 );
-                                Navigator.of(context).pop();
+
+                                final request = TransactionRequest(
+                                  userId: NetworkConstants.testUserId,
+                                  accountId: accountController.text,
+                                  transactionType:
+                                      typeController.text.toUpperCase(),
+                                  transactionCategory: categoryController.text,
+                                  transactionAmount:
+                                      double.parse(amountController.text),
+                                  transactionDate: selectedDate,
+                                  description: notesController.text,
+                                  to: toController.text,
+                                );
+
+                                final success =
+                                    await provider.addTransaction(request);
+
+                                if (success) {
+                                  // Show success message and close dialog
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Transaction added successfully!')),
+                                    );
+                                    Navigator.pop(context);
+
+                                    // Refresh the transaction list
+                                    await provider.fetchTransactions(
+                                        NetworkConstants.testUserId);
+                                  }
+                                } else {
+                                  // Show error message
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(provider.error ??
+                                            'Failed to add transaction'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
                               }
                             },
                             child: const Text('Add Transaction'),

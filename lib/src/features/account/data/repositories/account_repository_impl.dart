@@ -22,4 +22,15 @@ class AccountRepositoryImpl implements AccountRepository {
       return Left(e);
     }
   }
+
+  @override
+  Future<Either<NetworkException, List<AccountModel>>> getAccounts(
+      AccountRequest request) async {
+    try {
+      final result = await _remoteDataSource.getAccounts(request);
+      return Right(result);
+    } on NetworkException catch (e) {
+      return Left(e);
+    }
+  }
 }

@@ -5,6 +5,13 @@ part 'account_model.g.dart';
 /// Model class representing an account in the system
 @JsonSerializable()
 class AccountModel {
+  /// The unique identifier of the account
+  @JsonKey(name: 'id')
+  final String accountId;
+
+  /// The ID of the user who owns this account
+  final String userId;
+
   /// The name of the account
   final String accountName;
 
@@ -13,6 +20,8 @@ class AccountModel {
 
   /// Creates a new [AccountModel] instance
   const AccountModel({
+    required this.accountId,
+    required this.userId,
     required this.accountName,
     required this.balance,
   });

@@ -8,4 +8,8 @@ abstract class AccountRepository {
   /// Get account information by account ID and user ID
   Future<Either<NetworkException, AccountModel>> getAccount(
       AccountRequest request);
+
+  /// Get all accounts for a user
+  Future<Either<NetworkException, List<AccountModel>>> getAccounts(
+      AccountRequest request);
 }

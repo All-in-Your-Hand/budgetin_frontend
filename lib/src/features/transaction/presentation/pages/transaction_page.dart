@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
+import 'package:budgetin_frontend/src/features/account/presentation/providers/account_provider.dart';
 // import '../../../account/presentation/providers/account_provider.dart';
 
 /// A page that displays a list of user transactions.
@@ -37,6 +38,7 @@ class _TransactionPageState extends State<TransactionPage> {
       context
           .read<TransactionProvider>()
           .fetchTransactions(NetworkConstants.testUserId);
+      context.read<AccountProvider>().getAccounts(NetworkConstants.testUserId);
     });
   }
 
@@ -176,13 +178,16 @@ class _TransactionPageState extends State<TransactionPage> {
                         value: accountController.text.isEmpty
                             ? null
                             : accountController.text,
-                        items: const [
-                          DropdownMenuItem<String>(
-                            value: NetworkConstants.testAccountId,
+                        items: context
+                            .watch<AccountProvider>()
+                            .accounts
+                            .map((account) {
+                          return DropdownMenuItem<String>(
+                            value: account.accountId,
                             child: Text(
-                                'Account (${NetworkConstants.testAccountId})'),
-                          ),
-                        ],
+                                '${account.accountName} (Balance: €${account.balance.toStringAsFixed(2)})'),
+                          );
+                        }).toList(),
                         validator: (value) => context
                             .read<TransactionProvider>()
                             .validateAccount(value),

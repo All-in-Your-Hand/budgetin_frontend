@@ -15,13 +15,46 @@ class AccountRemoteDataSource {
   Future<AccountModel> getAccount(AccountRequest request) async {
     try {
       final response = await _dio.get(
-        NetworkConstants.getAccountByIdAndUserId(),
+        NetworkConstants.getAccountsByUserId(request.userId),
       );
 
-      return AccountModel.fromJson(response.data);
+      final Map<String, dynamic> data = response.data;
+      if (data['accounts'] == null || (data['accounts'] as List).isEmpty) {
+        throw NetworkException(
+          message: 'No accounts found',
+          statusCode: 404,
+        );
+      }
+
+      return AccountModel.fromJson(data['accounts'][0]);
     } on DioException catch (e) {
       throw NetworkException(
         message: e.message ?? 'Failed to fetch account',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
+  /// Get all accounts for a user from the API
+  Future<List<AccountModel>> getAccounts(AccountRequest request) async {
+    try {
+      final response = await _dio.get(
+        NetworkConstants.getAccountsByUserId(request.userId),
+      );
+
+      final Map<String, dynamic> data = response.data;
+      if (data['accounts'] == null) {
+        throw NetworkException(
+          message: 'Invalid response format: missing accounts field',
+          statusCode: 500,
+        );
+      }
+
+      final List<dynamic> accountsJson = data['accounts'];
+      return accountsJson.map((json) => AccountModel.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw NetworkException(
+        message: e.message ?? 'Failed to fetch accounts',
         statusCode: e.response?.statusCode,
       );
     }

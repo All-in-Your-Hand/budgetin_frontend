@@ -61,6 +61,8 @@ class TransactionTableProvider extends ChangeNotifier {
       _allTransactions.map((t) => t.transactionType).toSet().toList()
         ..sort()); // TODO: Fetch transaction types from backend.
 
+  Comparable<dynamic> Function(TransactionModel)? _currentSortField;
+
   /// Initializes the provider with a list of transactions.
   ///
   /// This method sets both the original and filtered transaction lists
@@ -69,6 +71,13 @@ class TransactionTableProvider extends ChangeNotifier {
     _allTransactions = List.from(transactions);
     _filteredTransactions = List.from(transactions);
     _updateMaxAmount();
+
+    // Set default sorting to date column (index 0) in descending order
+    _sortColumnIndex = 0;
+    _sortAscending = false;
+    _currentSortField = (transaction) => transaction.transactionDate;
+    _sortFilteredTransactions();
+
     notifyListeners();
   }
 
@@ -155,8 +164,6 @@ class TransactionTableProvider extends ChangeNotifier {
 
     notifyListeners();
   }
-
-  Comparable<dynamic> Function(TransactionModel)? _currentSortField;
 
   /// Sorts the transaction list by the specified field.
   ///

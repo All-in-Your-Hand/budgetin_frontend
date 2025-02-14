@@ -21,9 +21,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: request.toJson(),
       );
 
-      // Print response to console for debugging
-      print('Server Response: ${response.data}');
-
       return AuthResponseModel.fromJson(response.data);
     } on DioException catch (e) {
       print('Error creating user: ${e.message}');

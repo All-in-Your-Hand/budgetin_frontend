@@ -5,7 +5,9 @@ import 'package:budgetin_frontend/src/features/account/domain/repositories/accou
 import 'package:budgetin_frontend/src/features/account/presentation/providers/account_provider.dart';
 
 /// Register account-related dependencies
-void registerAccountDependencies(GetIt getIt) {
+void setupAccountInjections() {
+  final getIt = GetIt.instance;
+
   // Data sources
   getIt.registerLazySingleton<AccountRemoteDataSource>(
     () => AccountRemoteDataSource(getIt()),

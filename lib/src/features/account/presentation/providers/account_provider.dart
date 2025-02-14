@@ -11,7 +11,8 @@ class AccountProvider extends ChangeNotifier {
   bool _isLoading = false;
 
   /// Creates a new [AccountProvider] instance
-  AccountProvider(this._repository);
+  AccountProvider({required AccountRepository repository})
+      : _repository = repository;
 
   /// Current list of accounts
   List<AccountModel> get accounts => List.unmodifiable(_accounts);

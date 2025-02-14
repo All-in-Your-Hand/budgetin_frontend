@@ -5,12 +5,13 @@ import 'package:budgetin_frontend/src/features/transaction/domain/models/transac
 import 'package:budgetin_frontend/src/features/transaction/domain/repositories/transaction_repository.dart';
 
 class AddTransactionUseCase implements UseCase<String, TransactionRequest> {
-  final TransactionRepository repository;
+  final TransactionRepository _repository;
 
-  AddTransactionUseCase(this.repository);
+  AddTransactionUseCase({required TransactionRepository repository})
+      : _repository = repository;
 
   @override
   Future<Either<Failure, String>> call(TransactionRequest params) async {
-    return await repository.addTransaction(params);
+    return await _repository.addTransaction(params);
   }
 }

@@ -9,7 +9,7 @@ class AccountRemoteDataSource {
   final Dio _dio;
 
   /// Creates a new [AccountRemoteDataSource] instance
-  AccountRemoteDataSource(this._dio);
+  AccountRemoteDataSource({required Dio dio}) : _dio = dio;
 
   /// Get account information from the API
   Future<AccountModel> getAccount(AccountRequest request) async {

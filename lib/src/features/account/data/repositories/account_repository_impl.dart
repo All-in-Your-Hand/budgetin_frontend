@@ -10,7 +10,8 @@ class AccountRepositoryImpl implements AccountRepository {
   final AccountRemoteDataSource _remoteDataSource;
 
   /// Creates a new [AccountRepositoryImpl] instance
-  AccountRepositoryImpl(this._remoteDataSource);
+  AccountRepositoryImpl({required AccountRemoteDataSource remoteDataSource})
+      : _remoteDataSource = remoteDataSource;
 
   @override
   Future<Either<NetworkException, AccountModel>> getAccount(

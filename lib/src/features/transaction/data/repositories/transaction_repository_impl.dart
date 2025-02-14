@@ -7,15 +7,17 @@ import 'package:budgetin_frontend/src/core/network/error/failures.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 
 class TransactionRepositoryImpl implements TransactionRepository {
-  final TransactionRemoteDataSource remoteDataSource;
+  final TransactionRemoteDataSource _remoteDataSource;
 
-  TransactionRepositoryImpl({required this.remoteDataSource});
+  TransactionRepositoryImpl(
+      {required TransactionRemoteDataSource remoteDataSource})
+      : _remoteDataSource = remoteDataSource;
 
   @override
   Future<Either<NetworkException, List<TransactionModel>>> getTransactions(
       String userId) async {
     try {
-      final response = await remoteDataSource.getTransactions(userId);
+      final response = await _remoteDataSource.getTransactions(userId);
       return Right(response.transactions);
     } on NetworkException catch (e) {
       return Left(e);
@@ -26,7 +28,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<Either<Failure, String>> addTransaction(
       TransactionRequest request) async {
     try {
-      final result = await remoteDataSource.addTransaction(request);
+      final result = await _remoteDataSource.addTransaction(request);
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

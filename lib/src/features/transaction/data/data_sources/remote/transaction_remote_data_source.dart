@@ -10,14 +10,14 @@ abstract class TransactionRemoteDataSource {
 }
 
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
-  final Dio dio;
+  final Dio _dio;
 
-  TransactionRemoteDataSourceImpl({required this.dio});
+  TransactionRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   @override
   Future<TransactionResponse> getTransactions(String userId) async {
     try {
-      final response = await dio.get(
+      final response = await _dio.get(
         NetworkConstants.getTransactionsByUserId(
             //TODO: change to REAL userId
             NetworkConstants.testUserId),
@@ -43,7 +43,7 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   Future<String> addTransaction(TransactionRequest request) async {
     try {
       print('Sending transaction request: ${request.toJson()}'); // Debug log
-      final response = await dio.post(
+      final response = await _dio.post(
         NetworkConstants.transactionEndpoint,
         data: request.toJson(),
       );

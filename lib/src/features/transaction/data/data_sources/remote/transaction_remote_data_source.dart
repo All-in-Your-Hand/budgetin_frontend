@@ -42,17 +42,24 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   @override
   Future<String> addTransaction(TransactionRequest request) async {
     try {
-      print('Sending transaction request: ${request.toJson()}'); // Debug log
       final response = await _dio.post(
         NetworkConstants.transactionEndpoint,
         data: request.toJson(),
       );
-      print('Server response: ${response.data}'); // Debug log
 
-      return response.data['message'] as String;
-    } catch (e) {
-      print('Error in addTransaction: $e'); // Debug log
-      rethrow;
+      if (response.statusCode == 200) {
+        return response.data['message'] as String;
+      } else {
+        throw NetworkException(
+          message: 'Failed to add transaction',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException catch (e) {
+      throw NetworkException(
+        message: e.message ?? 'Failed to add transaction',
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 }

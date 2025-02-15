@@ -27,18 +27,20 @@ class _TransactionPageState extends State<TransactionPage> {
   @override
   void initState() {
     super.initState();
-    _fetchTransactions();
+    _fetchData();
   }
 
   /// Initiates the transaction fetching process.
   ///
   /// This method is called after the widget is inserted into the widget tree.
-  void _fetchTransactions() {
+  void _fetchData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context
-          .read<TransactionProvider>()
-          .fetchTransactions(NetworkConstants.testUserId);
-      context.read<AccountProvider>().getAccounts(NetworkConstants.testUserId);
+      const userId =
+          NetworkConstants.testUserId; // TODO: Get from auth provider
+      if (mounted) {
+        context.read<TransactionProvider>().fetchTransactions(userId);
+        context.read<AccountProvider>().getAccounts(userId);
+      }
     });
   }
 
@@ -345,44 +347,47 @@ class _TransactionPageState extends State<TransactionPage> {
           'Transactions',
           semanticsLabel: 'Transactions Page Title',
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchData,
+            tooltip: 'Refresh Transactions',
+          ),
+        ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Consumer<TransactionProvider>(
-            builder: (context, provider, child) {
-              if (provider.isLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+      body: Consumer<TransactionProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-              if (provider.error != null) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Error: ${provider.error}',
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => _fetchTransactions(),
-                        child: const Text('Retry'),
-                      ),
-                    ],
+          if (provider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Error: ${provider.error}',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
                   ),
-                );
-              }
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _fetchData(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TransactionTable(
-                  transactions: provider.transactions,
-                ),
-              );
-            },
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TransactionTable(
+              transactions: provider.transactions,
+            ),
           );
         },
       ),

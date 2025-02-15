@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_table_provider.dart';
+import '../providers/transaction_provider.dart';
+import '../../../account/presentation/providers/account_provider.dart';
 
 /// A widget that displays transaction data in a sortable and filterable table format.
 ///
@@ -40,25 +42,61 @@ class _TransactionTableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TransactionTableProvider>(
-      builder: (context, provider, _) => Column(
-        children: [
-          _buildFilters(context, provider),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+    return Consumer3<TransactionTableProvider, TransactionProvider,
+        AccountProvider>(
+      builder:
+          (context, tableProvider, transactionProvider, accountProvider, _) {
+        if (transactionProvider.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (transactionProvider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Error: ${transactionProvider.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => transactionProvider.fetchTransactions(
+                      'YOUR_USER_ID'), // TODO: Get from auth provider
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (tableProvider.transactions.isEmpty) {
+          return const Center(
+            child: Text('No transactions found'),
+          );
+        }
+
+        return Column(
+          children: [
+            _buildFilters(context, tableProvider),
+            Expanded(
               child: SingleChildScrollView(
-                child: DataTable(
-                  sortColumnIndex: provider.sortColumnIndex,
-                  sortAscending: provider.sortAscending,
-                  columns: _buildColumns(provider),
-                  rows: _buildRows(provider),
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  child: DataTable(
+                    sortColumnIndex: tableProvider.sortColumnIndex,
+                    sortAscending: tableProvider.sortAscending,
+                    columns: _buildColumns(tableProvider),
+                    rows: _buildRows(tableProvider, accountProvider),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 
@@ -118,13 +156,21 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   /// Builds the data rows for the table.
-  List<DataRow> _buildRows(TransactionTableProvider provider) {
+  List<DataRow> _buildRows(
+      TransactionTableProvider provider, AccountProvider accountProvider) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     return provider.transactions.map((transaction) {
+      // Find the account name from the account list
+      final accountName = accountProvider.accounts
+              .where((account) => account.accountId == transaction.accountId)
+              .map((account) => account.accountName)
+              .firstOrNull ??
+          '(Deleted Account)';
+
       return DataRow(
         cells: [
           DataCell(Text(dateFormat.format(transaction.transactionDate))),
-          DataCell(Text(transaction.accountId)),
+          DataCell(Text(accountName)),
           DataCell(Text(transaction.to)),
           DataCell(
               Text('\$${transaction.transactionAmount.toStringAsFixed(2)}')),

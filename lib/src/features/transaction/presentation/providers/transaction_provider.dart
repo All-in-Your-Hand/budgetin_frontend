@@ -144,6 +144,7 @@ class TransactionProvider extends ChangeNotifier {
   /// Sets [isLoading] while the operation is in progress and updates
   /// either [transactions] or [error] based on the result.
   Future<void> fetchTransactions(String userId) async {
+    // Set loading state
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -161,7 +162,10 @@ class TransactionProvider extends ChangeNotifier {
       },
     );
 
+    // Update loading state
     _isLoading = false;
+
+    // Ensure UI updates
     notifyListeners();
   }
 }

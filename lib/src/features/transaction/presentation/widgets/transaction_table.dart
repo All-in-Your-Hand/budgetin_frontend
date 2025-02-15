@@ -5,6 +5,7 @@ import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_table_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
+import '../../../../core/utils/constant/network_constants.dart';
 
 /// A widget that displays transaction data in a sortable and filterable table format.
 ///
@@ -40,6 +41,18 @@ class TransactionTable extends StatelessWidget {
 class _TransactionTableView extends StatelessWidget {
   const _TransactionTableView({Key? key}) : super(key: key);
 
+  /// Gets the account name for a given transaction, returning "(Deleted Account)" if not found.
+  ///
+  /// This helper method encapsulates the logic for looking up an account name by ID.
+  /// It's used for both displaying and sorting the account column.
+  String _getAccountName(String accountId, AccountProvider accountProvider) {
+    return accountProvider.accounts
+            .where((account) => account.accountId == accountId)
+            .map((account) => account.accountName)
+            .firstOrNull ??
+        '(Deleted Account)';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer3<TransactionTableProvider, TransactionProvider,
@@ -64,7 +77,8 @@ class _TransactionTableView extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => transactionProvider.fetchTransactions(
-                      'YOUR_USER_ID'), // TODO: Get from auth provider
+                      NetworkConstants
+                          .testUserId), // TODO: Get from auth provider
                   child: const Text('Retry'),
                 ),
               ],
@@ -88,7 +102,7 @@ class _TransactionTableView extends StatelessWidget {
                   child: DataTable(
                     sortColumnIndex: tableProvider.sortColumnIndex,
                     sortAscending: tableProvider.sortAscending,
-                    columns: _buildColumns(tableProvider),
+                    columns: _buildColumns(tableProvider, accountProvider),
                     rows: _buildRows(tableProvider, accountProvider),
                   ),
                 ),
@@ -101,7 +115,8 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   /// Builds the column definitions for the data table.
-  List<DataColumn> _buildColumns(TransactionTableProvider provider) {
+  List<DataColumn> _buildColumns(
+      TransactionTableProvider provider, AccountProvider accountProvider) {
     return [
       _buildSortableColumn<DateTime>(
         'Date',
@@ -111,7 +126,8 @@ class _TransactionTableView extends StatelessWidget {
       _buildSortableColumn<String>(
         'Account',
         provider,
-        (transaction) => transaction.accountId,
+        (transaction) =>
+            _getAccountName(transaction.accountId, accountProvider),
       ),
       _buildSortableColumn<String>(
         'To',
@@ -160,17 +176,11 @@ class _TransactionTableView extends StatelessWidget {
       TransactionTableProvider provider, AccountProvider accountProvider) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     return provider.transactions.map((transaction) {
-      // Find the account name from the account list
-      final accountName = accountProvider.accounts
-              .where((account) => account.accountId == transaction.accountId)
-              .map((account) => account.accountName)
-              .firstOrNull ??
-          '(Deleted Account)';
-
       return DataRow(
         cells: [
           DataCell(Text(dateFormat.format(transaction.transactionDate))),
-          DataCell(Text(accountName)),
+          DataCell(
+              Text(_getAccountName(transaction.accountId, accountProvider))),
           DataCell(Text(transaction.to)),
           DataCell(
               Text('\$${transaction.transactionAmount.toStringAsFixed(2)}')),
@@ -194,25 +204,25 @@ class _TransactionTableView extends StatelessWidget {
               Expanded(
                 child: _buildDateFilter(context, provider),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: _buildToFilter(provider),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: _buildAmountFilter(provider),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: _buildTypeFilter(provider),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           ElevatedButton(
             onPressed: provider.resetFilters,
             child: const Text('Reset Filters'),

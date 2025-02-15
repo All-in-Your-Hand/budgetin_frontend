@@ -5,8 +5,8 @@ import '../../../domain/models/transaction_response.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 
 abstract class TransactionRemoteDataSource {
-  Future<TransactionResponse> getTransactions(String userId);
   Future<String> addTransaction(TransactionRequest request);
+  Future<TransactionResponse> getTransactions(String userId);
 }
 
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {

@@ -51,3 +51,19 @@ class TransactionUpdateRequest {
 
   Map<String, dynamic> toJson() => _$TransactionUpdateRequestToJson(this);
 }
+
+@JsonSerializable()
+class DeleteTransactionRequest {
+  final String transactionId;
+  final String userId;
+
+  const DeleteTransactionRequest({
+    required this.transactionId,
+    required this.userId,
+  });
+
+  factory DeleteTransactionRequest.fromJson(Map<String, dynamic> json) =>
+      _$DeleteTransactionRequestFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DeleteTransactionRequestToJson(this);
+}

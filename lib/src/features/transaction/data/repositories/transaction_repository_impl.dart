@@ -45,4 +45,15 @@ class TransactionRepositoryImpl implements TransactionRepository {
       return Left(e);
     }
   }
+
+  @override
+  Future<Either<NetworkException, String>> deleteTransaction(
+      DeleteTransactionRequest request) async {
+    try {
+      final response = await _remoteDataSource.deleteTransaction(request);
+      return Right(response);
+    } on NetworkException catch (e) {
+      return Left(e);
+    }
+  }
 }

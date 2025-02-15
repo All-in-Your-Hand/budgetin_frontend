@@ -190,18 +190,84 @@ class _TransactionTableView extends StatelessWidget {
           DataCell(Text(transaction.transactionType)),
           DataCell(Text(transaction.description)),
           DataCell(
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => TransactionDialog.show(
-                context,
-                transaction: transaction,
-              ),
-              tooltip: 'Edit Transaction',
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () => TransactionDialog.show(
+                    context,
+                    transaction: transaction,
+                  ),
+                  tooltip: 'Edit Transaction',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => _showDeleteConfirmation(
+                    context,
+                    transaction,
+                  ),
+                  tooltip: 'Delete Transaction',
+                  color: Colors.red,
+                ),
+              ],
             ),
           ),
         ],
       );
     }).toList();
+  }
+
+  /// Shows a confirmation dialog before deleting a transaction
+  Future<void> _showDeleteConfirmation(
+      BuildContext context, TransactionModel transaction) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Transaction'),
+        content:
+            const Text('Are you sure you want to delete this transaction?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      final provider = context.read<TransactionProvider>();
+      final success = await provider.deleteTransaction(
+        transaction.transactionId,
+        NetworkConstants.testUserId,
+      );
+
+      if (context.mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Transaction deleted successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                provider.error ?? 'Failed to delete transaction',
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   Widget _buildFilters(

@@ -189,4 +189,41 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
     return result.isRight();
   }
+
+  /// Deletes a transaction from the repository.
+  ///
+  /// Parameters:
+  ///   - transactionId: The unique identifier of the transaction to delete
+  ///   - userId: The unique identifier of the user who owns the transaction
+  ///
+  /// Returns a Future that completes with true if the deletion was successful,
+  /// false otherwise.
+  Future<bool> deleteTransaction(String transactionId, String userId) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final request = DeleteTransactionRequest(
+      transactionId: transactionId,
+      userId: userId,
+    );
+
+    final result = await _repository.deleteTransaction(request);
+
+    result.fold(
+      (failure) {
+        _error = failure.message;
+        _isLoading = false;
+      },
+      (success) {
+        _error = null;
+        _isLoading = false;
+        // Remove the deleted transaction from the local list
+        _transactions.removeWhere((t) => t.transactionId == transactionId);
+      },
+    );
+
+    notifyListeners();
+    return result.isRight();
+  }
 }

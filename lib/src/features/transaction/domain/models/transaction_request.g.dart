@@ -43,3 +43,17 @@ Map<String, dynamic> _$TransactionUpdateRequestToJson(
     <String, dynamic>{
       'transaction': instance.transaction,
     };
+
+DeleteTransactionRequest _$DeleteTransactionRequestFromJson(
+        Map<String, dynamic> json) =>
+    DeleteTransactionRequest(
+      transactionId: json['transactionId'] as String,
+      userId: json['userId'] as String,
+    );
+
+Map<String, dynamic> _$DeleteTransactionRequestToJson(
+        DeleteTransactionRequest instance) =>
+    <String, dynamic>{
+      'transactionId': instance.transactionId,
+      'userId': instance.userId,
+    };

@@ -41,4 +41,15 @@ abstract class TransactionRepository {
   ///   - Right: String message if successful
   Future<Either<NetworkException, String>> updateTransaction(
       String transactionId, TransactionUpdateRequest request);
+
+  /// Deletes a transaction from the database
+  ///
+  /// Parameters:
+  ///   - request: The delete transaction request containing transactionId and userId
+  ///
+  /// Returns a [Future] that resolves to an [Either] containing either:
+  ///   - Left: [NetworkException] if the operation fails
+  ///   - Right: String message if successful
+  Future<Either<NetworkException, String>> deleteTransaction(
+      DeleteTransactionRequest request);
 }

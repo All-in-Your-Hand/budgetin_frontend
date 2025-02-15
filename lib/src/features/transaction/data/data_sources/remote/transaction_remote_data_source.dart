@@ -9,6 +9,7 @@ abstract class TransactionRemoteDataSource {
   Future<TransactionResponse> getTransactions(String userId);
   Future<String> updateTransaction(
       String transactionId, TransactionUpdateRequest request);
+  Future<String> deleteTransaction(DeleteTransactionRequest request);
 }
 
 /// Remote data source for transaction-related API calls
@@ -88,6 +89,30 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
     } on DioException catch (e) {
       throw NetworkException(
         message: e.message ?? 'Failed to update transaction',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
+  @override
+  Future<String> deleteTransaction(DeleteTransactionRequest request) async {
+    try {
+      final response = await _dio.delete(
+        NetworkConstants.transactionEndpoint,
+        data: request.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['message'] as String;
+      } else {
+        throw NetworkException(
+          message: 'Failed to delete transaction',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException catch (e) {
+      throw NetworkException(
+        message: e.message ?? 'Failed to delete transaction',
         statusCode: e.response?.statusCode,
       );
     }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'src/core/utils/injections.dart';
-import 'src/features/transaction/presentation/pages/transaction_page.dart';
+import 'src/core/router/app_router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,14 +22,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Budgetin',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const TransactionPage(),
+      routerConfig: router,
     );
   }
 }

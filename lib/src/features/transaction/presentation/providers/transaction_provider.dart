@@ -116,19 +116,19 @@ class TransactionProvider extends ChangeNotifier {
 
     final result = await _repository.addTransaction(request);
 
-    return result.fold(
+    result.fold(
       (failure) {
         _error = failure.message;
         _isLoading = false;
-        notifyListeners();
-        return false;
       },
       (success) {
+        _error = null;
         _isLoading = false;
-        notifyListeners();
-        return true;
       },
     );
+
+    notifyListeners();
+    return result.isRight();
   }
 
   /// Fetches transactions for the specified user.
@@ -140,7 +140,6 @@ class TransactionProvider extends ChangeNotifier {
   /// Sets [isLoading] while the operation is in progress and updates
   /// either [transactions] or [error] based on the result.
   Future<void> fetchTransactions(String userId) async {
-    // Set loading state
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -157,11 +156,7 @@ class TransactionProvider extends ChangeNotifier {
         _error = null;
       },
     );
-
-    // Update loading state
     _isLoading = false;
-
-    // Ensure UI updates
     notifyListeners();
   }
 }

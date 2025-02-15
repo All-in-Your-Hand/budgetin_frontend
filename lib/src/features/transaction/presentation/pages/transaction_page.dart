@@ -301,8 +301,10 @@ class _TransactionPageState extends State<TransactionPage> {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                          content: Text(
-                                              'Transaction added successfully!')),
+                                        content: Text(
+                                            'Transaction added successfully!'),
+                                        backgroundColor: Colors.green,
+                                      ),
                                     );
                                     Navigator.pop(context);
 

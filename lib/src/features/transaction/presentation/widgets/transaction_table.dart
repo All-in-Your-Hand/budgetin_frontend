@@ -6,6 +6,7 @@ import '../providers/transaction_table_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../core/utils/constant/network_constants.dart';
+import '../widgets/transaction_dialog.dart';
 
 /// A widget that displays transaction data in a sortable and filterable table format.
 ///
@@ -103,7 +104,7 @@ class _TransactionTableView extends StatelessWidget {
                     sortColumnIndex: tableProvider.sortColumnIndex,
                     sortAscending: tableProvider.sortAscending,
                     columns: _buildColumns(tableProvider, accountProvider),
-                    rows: _buildRows(tableProvider, accountProvider),
+                    rows: _buildRows(context, tableProvider, accountProvider),
                   ),
                 ),
               ),
@@ -154,6 +155,7 @@ class _TransactionTableView extends StatelessWidget {
         provider,
         (transaction) => transaction.description,
       ),
+      const DataColumn(label: Text('Actions')),
     ];
   }
 
@@ -172,7 +174,7 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   /// Builds the data rows for the table.
-  List<DataRow> _buildRows(
+  List<DataRow> _buildRows(BuildContext context,
       TransactionTableProvider provider, AccountProvider accountProvider) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     return provider.transactions.map((transaction) {
@@ -187,6 +189,16 @@ class _TransactionTableView extends StatelessWidget {
           DataCell(Text(transaction.transactionCategory)),
           DataCell(Text(transaction.transactionType)),
           DataCell(Text(transaction.description)),
+          DataCell(
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => TransactionDialog.show(
+                context,
+                transaction: transaction,
+              ),
+              tooltip: 'Edit Transaction',
+            ),
+          ),
         ],
       );
     }).toList();
@@ -195,7 +207,7 @@ class _TransactionTableView extends StatelessWidget {
   Widget _buildFilters(
       BuildContext context, TransactionTableProvider provider) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

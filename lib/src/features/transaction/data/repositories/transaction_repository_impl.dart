@@ -33,4 +33,16 @@ class TransactionRepositoryImpl implements TransactionRepository {
       return Left(e);
     }
   }
+
+  @override
+  Future<Either<NetworkException, String>> updateTransaction(
+      String transactionId, TransactionUpdateRequest request) async {
+    try {
+      final response =
+          await _remoteDataSource.updateTransaction(transactionId, request);
+      return Right(response);
+    } on NetworkException catch (e) {
+      return Left(e);
+    }
+  }
 }

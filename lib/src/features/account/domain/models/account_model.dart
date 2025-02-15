@@ -10,12 +10,15 @@ class AccountModel {
   final String accountId;
 
   /// The ID of the user who owns this account
+  @JsonKey(name: 'userId')
   final String userId;
 
   /// The name of the account
+  @JsonKey(name: 'accountName')
   final String accountName;
 
   /// The current balance of the account
+  @JsonKey(name: 'balance')
   final double balance;
 
   /// Creates a new [AccountModel] instance

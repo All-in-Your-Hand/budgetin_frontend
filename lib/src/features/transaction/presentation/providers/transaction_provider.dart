@@ -159,4 +159,34 @@ class TransactionProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  /// Updates a transaction in the repository.
+  ///
+  /// Parameters:
+  ///   - transactionId: The unique identifier of the transaction to update
+  ///   - request: The updated transaction request
+  ///
+  /// Returns a Future that completes when the transaction is updated.
+  Future<bool> updateTransaction(
+      String transactionId, TransactionUpdateRequest request) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _repository.updateTransaction(transactionId, request);
+
+    result.fold(
+      (failure) {
+        _error = failure.message;
+        _isLoading = false;
+      },
+      (success) {
+        _error = null;
+        _isLoading = false;
+      },
+    );
+
+    notifyListeners();
+    return result.isRight();
+  }
 }

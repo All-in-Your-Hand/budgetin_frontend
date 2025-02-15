@@ -30,3 +30,16 @@ Map<String, dynamic> _$TransactionRequestToJson(TransactionRequest instance) =>
       'description': instance.description,
       'to': instance.to,
     };
+
+TransactionUpdateRequest _$TransactionUpdateRequestFromJson(
+        Map<String, dynamic> json) =>
+    TransactionUpdateRequest(
+      transaction: TransactionModel.fromJson(
+          json['transaction'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$TransactionUpdateRequestToJson(
+        TransactionUpdateRequest instance) =>
+    <String, dynamic>{
+      'transaction': instance.transaction,
+    };

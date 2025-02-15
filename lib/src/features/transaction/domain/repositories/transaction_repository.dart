@@ -29,4 +29,16 @@ abstract class TransactionRepository {
   ///   - Right: String message if successful
   Future<Either<NetworkException, String>> addTransaction(
       TransactionRequest request);
+
+  /// Updates an existing transaction in the database
+  ///
+  /// Parameters:
+  ///   - transactionId: The unique identifier of the transaction to update
+  ///   - request: The transaction update request
+  ///
+  /// Returns a [Future] that resolves to an [Either] containing either:
+  ///   - Left: [NetworkException] if the operation fails
+  ///   - Right: String message if successful
+  Future<Either<NetworkException, String>> updateTransaction(
+      String transactionId, TransactionUpdateRequest request);
 }

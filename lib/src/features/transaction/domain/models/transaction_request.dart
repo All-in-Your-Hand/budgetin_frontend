@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'transaction_model.dart';
 
 part 'transaction_request.g.dart';
 
@@ -34,4 +35,19 @@ class TransactionRequest {
   static String _dateToJson(DateTime date) {
     return date.toIso8601String();
   }
+}
+
+@JsonSerializable()
+class TransactionUpdateRequest {
+  @JsonKey(name: 'transaction')
+  final TransactionModel transaction;
+
+  const TransactionUpdateRequest({
+    required this.transaction,
+  });
+
+  factory TransactionUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$TransactionUpdateRequestFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TransactionUpdateRequestToJson(this);
 }

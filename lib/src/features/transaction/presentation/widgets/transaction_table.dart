@@ -243,30 +243,10 @@ class _TransactionTableView extends StatelessWidget {
 
     if (confirmed == true && context.mounted) {
       final provider = context.read<TransactionProvider>();
-      final success = await provider.deleteTransaction(
+      await provider.deleteTransaction(
         transaction.transactionId,
         NetworkConstants.testUserId,
       );
-
-      if (context.mounted) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Transaction deleted successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                provider.error ?? 'Failed to delete transaction',
-              ),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
     }
   }
 

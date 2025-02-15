@@ -5,14 +5,21 @@ part 'transaction_request.g.dart';
 
 @JsonSerializable()
 class TransactionRequest {
+  @JsonKey(name: 'userId')
   final String userId;
+  @JsonKey(name: 'accountId')
   final String accountId;
+  @JsonKey(name: 'transactionType')
   final String transactionType;
+  @JsonKey(name: 'transactionCategory')
   final String transactionCategory;
+  @JsonKey(name: 'transactionAmount')
   final double transactionAmount;
   @JsonKey(toJson: _dateToJson)
   final DateTime transactionDate;
+  @JsonKey(name: 'description')
   final String description;
+  @JsonKey(name: 'to')
   final String to;
 
   const TransactionRequest({
@@ -54,7 +61,9 @@ class TransactionUpdateRequest {
 
 @JsonSerializable()
 class DeleteTransactionRequest {
+  @JsonKey(name: 'transactionId')
   final String transactionId;
+  @JsonKey(name: 'userId')
   final String userId;
 
   const DeleteTransactionRequest({

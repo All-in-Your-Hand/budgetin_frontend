@@ -6,6 +6,7 @@ part 'account_request.g.dart';
 @JsonSerializable()
 class AccountRequest {
   /// The ID of the user who owns the account
+  @JsonKey(name: 'userId')
   final String userId;
 
   /// Creates a new [AccountRequest] instance

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import '../../domain/models/transaction_model.dart';
 import '../../domain/repositories/transaction_repository.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
-import 'package:budgetin_frontend/src/features/transaction/domain/usecases/add_transaction_usecase.dart';
 
 /// Provider class that manages the state of transactions in the application.
 ///
@@ -11,7 +10,6 @@ import 'package:budgetin_frontend/src/features/transaction/domain/usecases/add_t
 /// [TransactionRepository] to fetch transaction data.
 class TransactionProvider extends ChangeNotifier {
   final TransactionRepository _repository;
-  final AddTransactionUseCase _addTransactionUseCase;
 
   List<TransactionModel> _transactions = [];
   bool _isLoading = false;
@@ -22,9 +20,7 @@ class TransactionProvider extends ChangeNotifier {
   /// Requires a [TransactionRepository] instance to handle data operations.
   TransactionProvider({
     required TransactionRepository repository,
-    required AddTransactionUseCase addTransactionUseCase,
-  })  : _repository = repository,
-        _addTransactionUseCase = addTransactionUseCase;
+  }) : _repository = repository;
 
   /// The current list of transactions.
   ///
@@ -118,7 +114,7 @@ class TransactionProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    final result = await _addTransactionUseCase(request);
+    final result = await _repository.addTransaction(request);
 
     return result.fold(
       (failure) {

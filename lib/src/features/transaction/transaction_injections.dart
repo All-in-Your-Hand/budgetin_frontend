@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'data/data_sources/remote/transaction_remote_data_source.dart';
 import 'data/repositories/transaction_repository_impl.dart';
 import 'domain/repositories/transaction_repository.dart';
-import 'domain/usecases/add_transaction_usecase.dart';
 import 'presentation/providers/transaction_provider.dart';
 
 /// Sets up all transaction-related dependencies
@@ -21,11 +20,6 @@ void setupTransactionInjections() {
       () => TransactionRepositoryImpl(remoteDataSource: getIt()),
     );
 
-    // Use cases
-    getIt.registerLazySingleton(
-      () => AddTransactionUseCase(repository: getIt()),
-    );
-
     // Providers
     // registerFactory works well if TransactionProvider should be recreated
     // when the widget tree is rebuilt
@@ -34,7 +28,6 @@ void setupTransactionInjections() {
     getIt.registerFactory(
       () => TransactionProvider(
         repository: getIt(),
-        addTransactionUseCase: getIt(),
       ),
     );
   } catch (e) {

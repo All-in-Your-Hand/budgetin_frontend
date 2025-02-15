@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../../../../core/network/error/network_exception.dart';
+import '../../../../../core/network/exception/network_exception.dart';
 import '../../../../../core/utils/constant/network_constants.dart';
 import '../../../domain/models/transaction_response.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
@@ -9,11 +9,14 @@ abstract class TransactionRemoteDataSource {
   Future<TransactionResponse> getTransactions(String userId);
 }
 
+/// Remote data source for transaction-related API calls
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   final Dio _dio;
 
+  /// Creates a new [TransactionRemoteDataSource] instance
   TransactionRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
+  /// Get all transactions for a user from the API
   @override
   Future<TransactionResponse> getTransactions(String userId) async {
     try {

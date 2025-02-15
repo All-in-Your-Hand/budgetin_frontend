@@ -12,7 +12,7 @@ void setupAccountInjections() {
 
     // Data sources
     getIt.registerLazySingleton<AccountRemoteDataSource>(
-      () => AccountRemoteDataSource(dio: getIt()),
+      () => AccountRemoteDataSourceImpl(dio: getIt()),
     );
 
     // Repositories

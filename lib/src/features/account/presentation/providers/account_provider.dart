@@ -30,7 +30,6 @@ class AccountProvider extends ChangeNotifier {
     notifyListeners();
 
     final request = AccountRequest(
-      accountId: '', // Not needed for fetching user accounts
       userId: userId,
     );
 

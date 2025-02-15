@@ -1,9 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/network/error/network_exception.dart';
+import '../../../../core/network/exception/network_exception.dart';
 import '../data_sources/remote/transaction_remote_data_source.dart';
 import '../../domain/models/transaction_model.dart';
 import '../../domain/repositories/transaction_repository.dart';
-import 'package:budgetin_frontend/src/core/network/error/failures.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 
 class TransactionRepositoryImpl implements TransactionRepository {
@@ -25,13 +24,13 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<Failure, String>> addTransaction(
+  Future<Either<NetworkException, String>> addTransaction(
       TransactionRequest request) async {
     try {
-      final result = await _remoteDataSource.addTransaction(request);
-      return Right(result);
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      final response = await _remoteDataSource.addTransaction(request);
+      return Right(response);
+    } on NetworkException catch (e) {
+      return Left(e);
     }
   }
 }

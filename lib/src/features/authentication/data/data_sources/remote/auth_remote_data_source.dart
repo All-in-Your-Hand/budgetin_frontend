@@ -3,28 +3,41 @@ import 'package:dio/dio.dart';
 import '../../../domain/models/auth_request_model.dart';
 import '../../../domain/models/auth_response_model.dart';
 import '../../../../../core/utils/constant/network_constants.dart';
+import '../../../../../core/network/exception/network_exception.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> createUser(AuthRequestModel request);
 }
 
+/// Remote data source for authentication-related API calls
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final Dio dio;
+  final Dio _dio;
 
-  AuthRemoteDataSourceImpl({required this.dio});
+  /// Creates a new [AuthRemoteDataSource] instance
+  AuthRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   @override
   Future<AuthResponseModel> createUser(AuthRequestModel request) async {
     try {
-      final response = await dio.post(
+      final response = await _dio.post(
+        //TODO: use real endpoint
         NetworkConstants.userEndpoint,
         data: request.toJson(),
       );
 
-      return AuthResponseModel.fromJson(response.data);
+      if (response.statusCode == 200) {
+        return AuthResponseModel.fromJson(response.data);
+      } else {
+        throw NetworkException(
+          message: 'Failed to create user',
+          statusCode: response.statusCode,
+        );
+      }
     } on DioException catch (e) {
-      print('Error creating user: ${e.message}');
-      throw Exception('Failed to create user: ${e.message}');
+      throw NetworkException(
+        message: e.message ?? 'Failed to create user',
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 }

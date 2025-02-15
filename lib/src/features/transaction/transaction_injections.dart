@@ -27,6 +27,10 @@ void setupTransactionInjections() {
     );
 
     // Providers
+    // registerFactory works well if TransactionProvider should be recreated
+    // when the widget tree is rebuilt
+    // Change to registerLazySingleton if we want to keep transactions in memory
+    // across pages.
     getIt.registerFactory(
       () => TransactionProvider(
         repository: getIt(),

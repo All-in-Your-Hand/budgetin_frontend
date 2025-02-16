@@ -23,10 +23,8 @@ class NetworkConstants {
   static const String accountEndpoint = '$apiUrl/accounts';
 
   /// Account endpoints
-  static String getAccountsByUserId(String userId) =>
-      '$accountEndpoint/$userId';
+  static String getAccountsByUserId(String userId) => '$accountEndpoint/$userId';
 
   /// Transaction endpoints
-  static String getTransactionsByUserId(String userId) =>
-      '$transactionEndpoint/$userId';
+  static String getTransactionsByUserId(String userId) => '$transactionEndpoint/$userId';
 }

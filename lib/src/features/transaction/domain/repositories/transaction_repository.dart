@@ -16,8 +16,7 @@ abstract class TransactionRepository {
   /// Returns a [Future] that resolves to an [Either] containing either:
   ///   - Left: [NetworkException] if the operation fails
   ///   - Right: List of [TransactionModel] if successful
-  Future<Either<NetworkException, List<TransactionModel>>> getTransactions(
-      String userId);
+  Future<Either<NetworkException, List<TransactionModel>>> getTransactions(String userId);
 
   /// Adds a new transaction to the database
   ///
@@ -27,8 +26,7 @@ abstract class TransactionRepository {
   /// Returns a [Future] that resolves to an [Either] containing either:
   ///   - Left: [NetworkException] if the operation fails
   ///   - Right: String message if successful
-  Future<Either<NetworkException, String>> addTransaction(
-      TransactionRequest request);
+  Future<Either<NetworkException, String>> addTransaction(TransactionRequest request);
 
   /// Updates an existing transaction in the database
   ///
@@ -39,8 +37,7 @@ abstract class TransactionRepository {
   /// Returns a [Future] that resolves to an [Either] containing either:
   ///   - Left: [NetworkException] if the operation fails
   ///   - Right: String message if successful
-  Future<Either<NetworkException, String>> updateTransaction(
-      String transactionId, TransactionUpdateRequest request);
+  Future<Either<NetworkException, String>> updateTransaction(String transactionId, TransactionUpdateRequest request);
 
   /// Deletes a transaction from the database
   ///
@@ -50,6 +47,5 @@ abstract class TransactionRepository {
   /// Returns a [Future] that resolves to an [Either] containing either:
   ///   - Left: [NetworkException] if the operation fails
   ///   - Right: String message if successful
-  Future<Either<NetworkException, String>> deleteTransaction(
-      DeleteTransactionRequest request);
+  Future<Either<NetworkException, String>> deleteTransaction(DeleteTransactionRequest request);
 }

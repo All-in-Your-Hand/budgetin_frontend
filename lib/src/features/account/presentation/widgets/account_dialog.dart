@@ -27,8 +27,7 @@ class AccountDialog extends StatefulWidget {
   ///
   /// This is a convenience method to show the dialog without directly creating
   /// an instance of [AccountDialog].
-  static Future<void> show(BuildContext context,
-      {AccountModel? account}) async {
+  static Future<void> show(BuildContext context, {AccountModel? account}) async {
     if (context.mounted) {
       await showDialog(
         context: context,
@@ -65,8 +64,7 @@ class _AccountDialogState extends State<AccountDialog> {
     super.dispose();
   }
 
-  Future<void> _handleSubmit(
-      BuildContext context, AccountProvider provider) async {
+  Future<void> _handleSubmit(BuildContext context, AccountProvider provider) async {
     if (!_formKey.currentState!.validate()) return;
 
     final request = widget.account != null
@@ -98,9 +96,7 @@ class _AccountDialogState extends State<AccountDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              widget.account != null
-                  ? 'Account updated successfully!'
-                  : 'Account added successfully!',
+              widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
             ),
             backgroundColor: Colors.green,
           ),
@@ -111,8 +107,7 @@ class _AccountDialogState extends State<AccountDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              provider.error ??
-                  'Failed to ${widget.account != null ? 'update' : 'add'} account',
+              provider.error ?? 'Failed to ${widget.account != null ? 'update' : 'add'} account',
             ),
             backgroundColor: Colors.red,
           ),

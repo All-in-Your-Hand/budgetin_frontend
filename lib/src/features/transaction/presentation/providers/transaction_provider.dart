@@ -167,8 +167,7 @@ class TransactionProvider extends ChangeNotifier {
   ///   - request: The updated transaction request
   ///
   /// Returns a Future that completes when the transaction is updated.
-  Future<bool> updateTransaction(
-      String transactionId, TransactionUpdateRequest request) async {
+  Future<bool> updateTransaction(String transactionId, TransactionUpdateRequest request) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

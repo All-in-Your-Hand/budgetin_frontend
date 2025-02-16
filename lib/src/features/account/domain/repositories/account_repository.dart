@@ -6,18 +6,14 @@ import 'package:budgetin_frontend/src/features/account/domain/models/account_req
 /// Repository interface for account-related operations
 abstract class AccountRepository {
   /// Get all accounts for a user
-  Future<Either<NetworkException, List<AccountModel>>> getAccounts(
-      AccountRequest request);
+  Future<Either<NetworkException, List<AccountModel>>> getAccounts(AccountRequest request);
 
   /// Add a new account
-  Future<Either<NetworkException, String>> addAccount(
-      AddAccountRequest request);
+  Future<Either<NetworkException, String>> addAccount(AddAccountRequest request);
 
   /// Update an existing account
-  Future<Either<NetworkException, String>> updateAccount(
-      AccountUpdateRequest request);
+  Future<Either<NetworkException, String>> updateAccount(AccountUpdateRequest request);
 
   /// Delete an account
-  Future<Either<NetworkException, String>> deleteAccount(
-      DeleteAccountRequest request);
+  Future<Either<NetworkException, String>> deleteAccount(DeleteAccountRequest request);
 }

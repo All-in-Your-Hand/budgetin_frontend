@@ -10,12 +10,10 @@ class AccountRepositoryImpl implements AccountRepository {
   final AccountRemoteDataSource _remoteDataSource;
 
   /// Creates a new [AccountRepositoryImpl] instance
-  AccountRepositoryImpl({required AccountRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+  AccountRepositoryImpl({required AccountRemoteDataSource remoteDataSource}) : _remoteDataSource = remoteDataSource;
 
   @override
-  Future<Either<NetworkException, List<AccountModel>>> getAccounts(
-      AccountRequest request) async {
+  Future<Either<NetworkException, List<AccountModel>>> getAccounts(AccountRequest request) async {
     try {
       final response = await _remoteDataSource.getAccounts(request);
       return Right(response.accounts);
@@ -25,8 +23,7 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<Either<NetworkException, String>> addAccount(
-      AddAccountRequest request) async {
+  Future<Either<NetworkException, String>> addAccount(AddAccountRequest request) async {
     try {
       final response = await _remoteDataSource.addAccount(request);
       return Right(response);
@@ -36,8 +33,7 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<Either<NetworkException, String>> updateAccount(
-      AccountUpdateRequest request) async {
+  Future<Either<NetworkException, String>> updateAccount(AccountUpdateRequest request) async {
     try {
       final response = await _remoteDataSource.updateAccount(request);
       return Right(response);
@@ -47,8 +43,7 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<Either<NetworkException, String>> deleteAccount(
-      DeleteAccountRequest request) async {
+  Future<Either<NetworkException, String>> deleteAccount(DeleteAccountRequest request) async {
     try {
       final response = await _remoteDataSource.deleteAccount(request);
       return Right(response);

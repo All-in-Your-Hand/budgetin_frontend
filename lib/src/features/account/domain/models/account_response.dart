@@ -12,8 +12,7 @@ class AccountResponse {
     required this.accounts,
   });
 
-  factory AccountResponse.fromJson(Map<String, dynamic> json) =>
-      _$AccountResponseFromJson(json);
+  factory AccountResponse.fromJson(Map<String, dynamic> json) => _$AccountResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountResponseToJson(this);
 }

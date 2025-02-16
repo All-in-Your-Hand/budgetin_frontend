@@ -48,8 +48,7 @@ class TransactionModel {
   });
 
   /// Creates a [TransactionModel] from a JSON map
-  factory TransactionModel.fromJson(Map<String, dynamic> json) =>
-      _$TransactionModelFromJson(json);
+  factory TransactionModel.fromJson(Map<String, dynamic> json) => _$TransactionModelFromJson(json);
 
   /// Converts this [TransactionModel] to a JSON map
   Map<String, dynamic> toJson() => _$TransactionModelToJson(this);

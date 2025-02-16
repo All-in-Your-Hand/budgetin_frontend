@@ -29,8 +29,7 @@ class TransactionDialog extends StatefulWidget {
   ///
   /// This is a convenience method to show the dialog without directly creating
   /// an instance of [TransactionDialog].
-  static Future<void> show(BuildContext context,
-      {TransactionModel? transaction}) async {
+  static Future<void> show(BuildContext context, {TransactionModel? transaction}) async {
     if (context.mounted) {
       await showDialog(
         context: context,
@@ -80,17 +79,13 @@ class _TransactionDialogState extends State<TransactionDialog> {
           : DateFormat('dd/MM/yyyy').format(DateTime.now()),
     );
     _toController = TextEditingController(text: transaction?.to ?? '');
-    _categoryController =
-        TextEditingController(text: transaction?.transactionCategory ?? '');
-    _accountController =
-        TextEditingController(text: transaction?.accountId ?? '');
+    _categoryController = TextEditingController(text: transaction?.transactionCategory ?? '');
+    _accountController = TextEditingController(text: transaction?.accountId ?? '');
     _amountController = TextEditingController(
       text: transaction?.transactionAmount.toString() ?? '',
     );
-    _typeController =
-        TextEditingController(text: transaction?.transactionType ?? '');
-    _notesController =
-        TextEditingController(text: transaction?.description ?? '');
+    _typeController = TextEditingController(text: transaction?.transactionType ?? '');
+    _notesController = TextEditingController(text: transaction?.description ?? '');
   }
 
   @override
@@ -105,8 +100,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
     super.dispose();
   }
 
-  Future<void> _handleSubmit(
-      BuildContext context, TransactionProvider provider) async {
+  Future<void> _handleSubmit(BuildContext context, TransactionProvider provider) async {
     if (!_formKey.currentState!.validate()) return;
 
     final dateParts = _dateController.text.split('/');
@@ -131,10 +125,8 @@ class _TransactionDialogState extends State<TransactionDialog> {
         to: _toController.text,
       );
 
-      final updateRequest =
-          TransactionUpdateRequest(transaction: updatedTransaction);
-      success = await provider.updateTransaction(
-          widget.transaction!.transactionId, updateRequest);
+      final updateRequest = TransactionUpdateRequest(transaction: updatedTransaction);
+      success = await provider.updateTransaction(widget.transaction!.transactionId, updateRequest);
     } else {
       final request = TransactionRequest(
         userId: NetworkConstants.testUserId,
@@ -157,9 +149,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              widget.transaction != null
-                  ? 'Transaction updated successfully!'
-                  : 'Transaction added successfully!',
+              widget.transaction != null ? 'Transaction updated successfully!' : 'Transaction added successfully!',
             ),
             backgroundColor: Colors.green,
           ),
@@ -170,8 +160,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              provider.error ??
-                  'Failed to ${widget.transaction != null ? 'update' : 'add'} transaction',
+              provider.error ?? 'Failed to ${widget.transaction != null ? 'update' : 'add'} transaction',
             ),
             backgroundColor: Colors.red,
           ),
@@ -198,9 +187,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.transaction != null
-                        ? 'Edit Transaction'
-                        : 'Add Transaction',
+                    widget.transaction != null ? 'Edit Transaction' : 'Add Transaction',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -240,8 +227,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
       ),
       controller: _dateController,
       readOnly: true,
-      validator: (value) =>
-          context.read<TransactionProvider>().validateDate(value),
+      validator: (value) => context.read<TransactionProvider>().validateDate(value),
       onTap: () async {
         final currentParts = _dateController.text.split('/');
         final currentDate = DateTime(
@@ -297,8 +283,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
     );
   }
 
-  Widget _buildAccountField(
-      AccountProvider accountProvider, TransactionProvider provider) {
+  Widget _buildAccountField(AccountProvider accountProvider, TransactionProvider provider) {
     return DropdownButtonFormField<String>(
       decoration: const InputDecoration(
         labelText: 'From Account *',
@@ -308,8 +293,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
       items: accountProvider.accounts.map((account) {
         return DropdownMenuItem(
           value: account.id,
-          child: Text(
-              '${account.accountName} (Balance: €${account.balance.toStringAsFixed(2)})'),
+          child: Text('${account.accountName} (Balance: €${account.balance.toStringAsFixed(2)})'),
         );
       }).toList(),
       validator: (value) => provider.validateAccount(value),
@@ -372,8 +356,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
     );
   }
 
-  Widget _buildActionButtons(
-      BuildContext context, TransactionProvider provider) {
+  Widget _buildActionButtons(BuildContext context, TransactionProvider provider) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -384,9 +367,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
         const SizedBox(width: 8),
         ElevatedButton(
           onPressed: () => _handleSubmit(context, provider),
-          child: Text(widget.transaction != null
-              ? 'Update Transaction'
-              : 'Add Transaction'),
+          child: Text(widget.transaction != null ? 'Update Transaction' : 'Add Transaction'),
         ),
       ],
     );

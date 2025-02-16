@@ -16,8 +16,7 @@ class AccountRequest {
   });
 
   /// Creates an [AccountRequest] from JSON map
-  factory AccountRequest.fromJson(Map<String, dynamic> json) =>
-      _$AccountRequestFromJson(json);
+  factory AccountRequest.fromJson(Map<String, dynamic> json) => _$AccountRequestFromJson(json);
 
   /// Converts this [AccountRequest] to a JSON map
   Map<String, dynamic> toJson() => _$AccountRequestToJson(this);
@@ -46,8 +45,7 @@ class AddAccountRequest {
   });
 
   /// Creates an [AddAccountRequest] from JSON map
-  factory AddAccountRequest.fromJson(Map<String, dynamic> json) =>
-      _$AddAccountRequestFromJson(json);
+  factory AddAccountRequest.fromJson(Map<String, dynamic> json) => _$AddAccountRequestFromJson(json);
 
   /// Converts this [AddAccountRequest] to a JSON map
   Map<String, dynamic> toJson() => _$AddAccountRequestToJson(this);
@@ -66,8 +64,7 @@ class AccountUpdateRequest {
   });
 
   /// Creates an [AccountUpdateRequest] from JSON map
-  factory AccountUpdateRequest.fromJson(Map<String, dynamic> json) =>
-      _$AccountUpdateRequestFromJson(json);
+  factory AccountUpdateRequest.fromJson(Map<String, dynamic> json) => _$AccountUpdateRequestFromJson(json);
 
   /// Converts this [AccountUpdateRequest] to a JSON map
   Map<String, dynamic> toJson() => _$AccountUpdateRequestToJson(this);
@@ -86,8 +83,7 @@ class DeleteAccountRequest {
   });
 
   /// Creates a [DeleteAccountRequest] from JSON map
-  factory DeleteAccountRequest.fromJson(Map<String, dynamic> json) =>
-      _$DeleteAccountRequestFromJson(json);
+  factory DeleteAccountRequest.fromJson(Map<String, dynamic> json) => _$DeleteAccountRequestFromJson(json);
 
   /// Converts this [DeleteAccountRequest] to a JSON map
   Map<String, dynamic> toJson() => _$DeleteAccountRequestToJson(this);

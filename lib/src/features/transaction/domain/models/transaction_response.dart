@@ -12,8 +12,7 @@ class TransactionResponse {
     required this.transactions,
   });
 
-  factory TransactionResponse.fromJson(Map<String, dynamic> json) =>
-      _$TransactionResponseFromJson(json);
+  factory TransactionResponse.fromJson(Map<String, dynamic> json) => _$TransactionResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionResponseToJson(this);
 }

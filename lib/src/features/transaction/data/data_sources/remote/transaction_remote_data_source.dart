@@ -7,8 +7,7 @@ import 'package:budgetin_frontend/src/features/transaction/domain/models/transac
 abstract class TransactionRemoteDataSource {
   Future<String> addTransaction(TransactionRequest request);
   Future<TransactionResponse> getTransactions(String userId);
-  Future<String> updateTransaction(
-      String transactionId, TransactionUpdateRequest request);
+  Future<String> updateTransaction(String transactionId, TransactionUpdateRequest request);
   Future<String> deleteTransaction(DeleteTransactionRequest request);
 }
 
@@ -70,8 +69,7 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   }
 
   @override
-  Future<String> updateTransaction(
-      String transactionId, TransactionUpdateRequest request) async {
+  Future<String> updateTransaction(String transactionId, TransactionUpdateRequest request) async {
     try {
       final response = await _dio.put(
         NetworkConstants.transactionEndpoint,

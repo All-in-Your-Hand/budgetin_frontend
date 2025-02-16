@@ -12,8 +12,7 @@ class TransactionTableProvider extends ChangeNotifier {
   List<TransactionModel> _filteredTransactions = [];
 
   /// The current list of filtered transactions to display.
-  List<TransactionModel> get transactions =>
-      List.unmodifiable(_filteredTransactions);
+  List<TransactionModel> get transactions => List.unmodifiable(_filteredTransactions);
 
   int? _sortColumnIndex;
 
@@ -57,9 +56,8 @@ class TransactionTableProvider extends ChangeNotifier {
   String? get selectedType => _selectedType;
 
   /// List of unique transaction types available in the dataset.
-  List<String> get transactionTypes => List.unmodifiable(
-      _allTransactions.map((t) => t.transactionType).toSet().toList()
-        ..sort()); // TODO: Fetch transaction types from backend.
+  List<String> get transactionTypes => List.unmodifiable(_allTransactions.map((t) => t.transactionType).toSet().toList()
+    ..sort()); // TODO: Fetch transaction types from backend.
 
   Comparable<dynamic> Function(TransactionModel)? _currentSortField;
 
@@ -84,9 +82,7 @@ class TransactionTableProvider extends ChangeNotifier {
   /// Updates the maximum amount based on the current transaction list.
   void _updateMaxAmount() {
     if (_allTransactions.isNotEmpty) {
-      _maxAmount = _allTransactions
-          .map((t) => t.transactionAmount)
-          .reduce((a, b) => a > b ? a : b);
+      _maxAmount = _allTransactions.map((t) => t.transactionAmount).reduce((a, b) => a > b ? a : b);
     }
   }
 
@@ -109,8 +105,7 @@ class TransactionTableProvider extends ChangeNotifier {
   ///
   /// The [min] value must be less than or equal to [max].
   void setAmountRange(double min, double max) {
-    assert(min <= max,
-        'Minimum amount must be less than or equal to maximum amount');
+    assert(min <= max, 'Minimum amount must be less than or equal to maximum amount');
     _minAmount = min;
     _maxAmount = max;
     _applyFilters();
@@ -128,8 +123,7 @@ class TransactionTableProvider extends ChangeNotifier {
   void _applyFilters() {
     _filteredTransactions = _allTransactions.where((transaction) {
       // Date filter
-      if (_startDate != null &&
-          transaction.transactionDate.isBefore(_startDate!)) {
+      if (_startDate != null && transaction.transactionDate.isBefore(_startDate!)) {
         return false;
       }
       if (_endDate != null && transaction.transactionDate.isAfter(_endDate!)) {
@@ -137,20 +131,17 @@ class TransactionTableProvider extends ChangeNotifier {
       }
 
       // To filter
-      if (_toFilter.isNotEmpty &&
-          !transaction.to.toLowerCase().contains(_toFilter.toLowerCase())) {
+      if (_toFilter.isNotEmpty && !transaction.to.toLowerCase().contains(_toFilter.toLowerCase())) {
         return false;
       }
 
       // Amount filter
-      if (transaction.transactionAmount < _minAmount ||
-          transaction.transactionAmount > _maxAmount) {
+      if (transaction.transactionAmount < _minAmount || transaction.transactionAmount > _maxAmount) {
         return false;
       }
 
       // Type filter
-      if (_selectedType != null &&
-          transaction.transactionType != _selectedType) {
+      if (_selectedType != null && transaction.transactionType != _selectedType) {
         return false;
       }
 
@@ -170,8 +161,7 @@ class TransactionTableProvider extends ChangeNotifier {
   /// Parameters:
   ///   - getField: A function that extracts the comparable field from a transaction
   ///   - columnIndex: The index of the column being sorted
-  void sort<T extends Comparable<T>>(
-      T Function(TransactionModel transaction) getField, int columnIndex) {
+  void sort<T extends Comparable<T>>(T Function(TransactionModel transaction) getField, int columnIndex) {
     _currentSortField = getField;
     _sortAscending = _sortColumnIndex == columnIndex ? !_sortAscending : true;
     _sortColumnIndex = columnIndex;
@@ -186,9 +176,7 @@ class TransactionTableProvider extends ChangeNotifier {
     _filteredTransactions.sort((a, b) {
       final aValue = _currentSortField!(a);
       final bValue = _currentSortField!(b);
-      return _sortAscending
-          ? Comparable.compare(aValue, bValue)
-          : Comparable.compare(bValue, aValue);
+      return _sortAscending ? Comparable.compare(aValue, bValue) : Comparable.compare(bValue, aValue);
     });
   }
 
@@ -200,9 +188,7 @@ class TransactionTableProvider extends ChangeNotifier {
     _minAmount = 0;
     _maxAmount = _allTransactions.isEmpty
         ? double.infinity
-        : _allTransactions
-            .map((t) => t.transactionAmount)
-            .reduce((a, b) => a > b ? a : b);
+        : _allTransactions.map((t) => t.transactionAmount).reduce((a, b) => a > b ? a : b);
     _selectedType = null;
     _applyFilters();
   }

@@ -8,13 +8,11 @@ import 'package:budgetin_frontend/src/features/transaction/domain/models/transac
 class TransactionRepositoryImpl implements TransactionRepository {
   final TransactionRemoteDataSource _remoteDataSource;
 
-  TransactionRepositoryImpl(
-      {required TransactionRemoteDataSource remoteDataSource})
+  TransactionRepositoryImpl({required TransactionRemoteDataSource remoteDataSource})
       : _remoteDataSource = remoteDataSource;
 
   @override
-  Future<Either<NetworkException, List<TransactionModel>>> getTransactions(
-      String userId) async {
+  Future<Either<NetworkException, List<TransactionModel>>> getTransactions(String userId) async {
     try {
       final response = await _remoteDataSource.getTransactions(userId);
       return Right(response.transactions);
@@ -24,8 +22,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<NetworkException, String>> addTransaction(
-      TransactionRequest request) async {
+  Future<Either<NetworkException, String>> addTransaction(TransactionRequest request) async {
     try {
       final response = await _remoteDataSource.addTransaction(request);
       return Right(response);
@@ -38,8 +35,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<Either<NetworkException, String>> updateTransaction(
       String transactionId, TransactionUpdateRequest request) async {
     try {
-      final response =
-          await _remoteDataSource.updateTransaction(transactionId, request);
+      final response = await _remoteDataSource.updateTransaction(transactionId, request);
       return Right(response);
     } on NetworkException catch (e) {
       return Left(e);
@@ -47,8 +43,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<Either<NetworkException, String>> deleteTransaction(
-      DeleteTransactionRequest request) async {
+  Future<Either<NetworkException, String>> deleteTransaction(DeleteTransactionRequest request) async {
     try {
       final response = await _remoteDataSource.deleteTransaction(request);
       return Right(response);

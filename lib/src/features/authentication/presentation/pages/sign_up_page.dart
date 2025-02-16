@@ -108,9 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -140,14 +138,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isConfirmPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
-                            _isConfirmPasswordVisible =
-                                !_isConfirmPasswordVisible;
+                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -167,9 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: authProvider.isLoading ? null : _handleSignUp,
-                    child: authProvider.isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Sign Up'),
+                    child: authProvider.isLoading ? const CircularProgressIndicator() : const Text('Sign Up'),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

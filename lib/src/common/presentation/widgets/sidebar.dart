@@ -93,9 +93,7 @@ class _SidebarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isEnabled
-        ? (isSelected
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.onSurface)
+        ? (isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface)
         : Theme.of(context).colorScheme.onSurface.withAlpha(128);
 
     return Material(
@@ -111,8 +109,7 @@ class _SidebarItem extends StatelessWidget {
         ),
         selected: isSelected,
         onTap: onTap,
-        selectedTileColor:
-            Theme.of(context).colorScheme.primaryContainer.withAlpha(128),
+        selectedTileColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(128),
       ),
     );
   }

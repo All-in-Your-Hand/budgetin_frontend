@@ -32,8 +32,7 @@ class _TransactionPageState extends State<TransactionPage> {
   /// This method is called after the widget is inserted into the widget tree.
   void _fetchData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      const userId =
-          NetworkConstants.testUserId; // TODO: Get from auth provider
+      const userId = NetworkConstants.testUserId; // TODO: Get from auth provider
       if (mounted) {
         context.read<TransactionProvider>().fetchTransactions(userId);
         context.read<AccountProvider>().getAccounts(userId);

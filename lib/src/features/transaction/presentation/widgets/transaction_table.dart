@@ -28,8 +28,7 @@ class TransactionTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) =>
-          TransactionTableProvider()..initializeTransactions(transactions),
+      create: (_) => TransactionTableProvider()..initializeTransactions(transactions),
       child: const _TransactionTableView(),
     );
   }
@@ -56,10 +55,8 @@ class _TransactionTableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<TransactionTableProvider, TransactionProvider,
-        AccountProvider>(
-      builder:
-          (context, tableProvider, transactionProvider, accountProvider, _) {
+    return Consumer3<TransactionTableProvider, TransactionProvider, AccountProvider>(
+      builder: (context, tableProvider, transactionProvider, accountProvider, _) {
         if (transactionProvider.isLoading) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -77,9 +74,8 @@ class _TransactionTableView extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => transactionProvider.fetchTransactions(
-                      NetworkConstants
-                          .testUserId), // TODO: Get from auth provider
+                  onPressed: () => transactionProvider
+                      .fetchTransactions(NetworkConstants.testUserId), // TODO: Get from auth provider
                   child: const Text('Retry'),
                 ),
               ],
@@ -116,8 +112,7 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   /// Builds the column definitions for the data table.
-  List<DataColumn> _buildColumns(
-      TransactionTableProvider provider, AccountProvider accountProvider) {
+  List<DataColumn> _buildColumns(TransactionTableProvider provider, AccountProvider accountProvider) {
     return [
       _buildSortableColumn<DateTime>(
         'Date',
@@ -127,8 +122,7 @@ class _TransactionTableView extends StatelessWidget {
       _buildSortableColumn<String>(
         'Account',
         provider,
-        (transaction) =>
-            _getAccountName(transaction.accountId, accountProvider),
+        (transaction) => _getAccountName(transaction.accountId, accountProvider),
       ),
       _buildSortableColumn<String>(
         'To',
@@ -174,18 +168,15 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   /// Builds the data rows for the table.
-  List<DataRow> _buildRows(BuildContext context,
-      TransactionTableProvider provider, AccountProvider accountProvider) {
+  List<DataRow> _buildRows(BuildContext context, TransactionTableProvider provider, AccountProvider accountProvider) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     return provider.transactions.map((transaction) {
       return DataRow(
         cells: [
           DataCell(Text(dateFormat.format(transaction.transactionDate))),
-          DataCell(
-              Text(_getAccountName(transaction.accountId, accountProvider))),
+          DataCell(Text(_getAccountName(transaction.accountId, accountProvider))),
           DataCell(Text(transaction.to)),
-          DataCell(
-              Text('\$${transaction.transactionAmount.toStringAsFixed(2)}')),
+          DataCell(Text('\$${transaction.transactionAmount.toStringAsFixed(2)}')),
           DataCell(Text(transaction.transactionCategory)),
           DataCell(Text(transaction.transactionType)),
           DataCell(Text(transaction.description)),
@@ -219,14 +210,12 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   /// Shows a confirmation dialog before deleting a transaction
-  Future<void> _showDeleteConfirmation(
-      BuildContext context, TransactionModel transaction) async {
+  Future<void> _showDeleteConfirmation(BuildContext context, TransactionModel transaction) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Transaction'),
-        content:
-            const Text('Are you sure you want to delete this transaction?'),
+        content: const Text('Are you sure you want to delete this transaction?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -250,8 +239,7 @@ class _TransactionTableView extends StatelessWidget {
     }
   }
 
-  Widget _buildFilters(
-      BuildContext context, TransactionTableProvider provider) {
+  Widget _buildFilters(BuildContext context, TransactionTableProvider provider) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -290,29 +278,25 @@ class _TransactionTableView extends StatelessWidget {
     );
   }
 
-  Widget _buildDateFilter(
-      BuildContext context, TransactionTableProvider provider) {
+  Widget _buildDateFilter(BuildContext context, TransactionTableProvider provider) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Date Range',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Date Range', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () async {
-                      final DateTimeRange? dateRange =
-                          await showDateRangePicker(
+                      final DateTimeRange? dateRange = await showDateRangePicker(
                         context: context,
                         firstDate: DateTime(2000),
                         lastDate: DateTime.now(),
-                        initialDateRange: provider.startDate != null &&
-                                provider.endDate != null
+                        initialDateRange: provider.startDate != null && provider.endDate != null
                             ? DateTimeRange(
                                 start: provider.startDate!,
                                 end: provider.endDate!,
@@ -363,13 +347,10 @@ class _TransactionTableView extends StatelessWidget {
 
   Widget _buildAmountFilter(TransactionTableProvider provider) {
     final minController = TextEditingController(
-      text:
-          provider.minAmount == 0 ? '' : provider.minAmount.toStringAsFixed(2),
+      text: provider.minAmount == 0 ? '' : provider.minAmount.toStringAsFixed(2),
     );
     final maxController = TextEditingController(
-      text: provider.maxAmount == double.infinity
-          ? ''
-          : provider.maxAmount.toStringAsFixed(2),
+      text: provider.maxAmount == double.infinity ? '' : provider.maxAmount.toStringAsFixed(2),
     );
 
     return Card(
@@ -378,8 +359,7 @@ class _TransactionTableView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Amount Range',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Amount Range', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -392,8 +372,7 @@ class _TransactionTableView extends StatelessWidget {
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -406,8 +385,7 @@ class _TransactionTableView extends StatelessWidget {
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -417,15 +395,12 @@ class _TransactionTableView extends StatelessWidget {
                     return ValueListenableBuilder<TextEditingValue>(
                       valueListenable: maxController,
                       builder: (context, maxValue, _) {
-                        final isEnabled = minValue.text.isNotEmpty ||
-                            maxValue.text.isNotEmpty;
+                        final isEnabled = minValue.text.isNotEmpty || maxValue.text.isNotEmpty;
                         return ElevatedButton(
                           onPressed: isEnabled
                               ? () {
-                                  final min =
-                                      double.tryParse(minValue.text) ?? 0;
-                                  final max = double.tryParse(maxValue.text) ??
-                                      double.infinity;
+                                  final min = double.tryParse(minValue.text) ?? 0;
+                                  final max = double.tryParse(maxValue.text) ?? double.infinity;
                                   provider.setAmountRange(min, max);
                                 }
                               : null,

@@ -30,8 +30,7 @@ class AccountModel {
   });
 
   /// Creates an [AccountModel] from JSON map
-  factory AccountModel.fromJson(Map<String, dynamic> json) =>
-      _$AccountModelFromJson(json);
+  factory AccountModel.fromJson(Map<String, dynamic> json) => _$AccountModelFromJson(json);
 
   /// Converts this [AccountModel] to a JSON map
   Map<String, dynamic> toJson() => _$AccountModelToJson(this);

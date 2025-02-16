@@ -33,8 +33,7 @@ class TransactionRequest {
     required this.to,
   });
 
-  factory TransactionRequest.fromJson(Map<String, dynamic> json) =>
-      _$TransactionRequestFromJson(json);
+  factory TransactionRequest.fromJson(Map<String, dynamic> json) => _$TransactionRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionRequestToJson(this);
 
@@ -53,8 +52,7 @@ class TransactionUpdateRequest {
     required this.transaction,
   });
 
-  factory TransactionUpdateRequest.fromJson(Map<String, dynamic> json) =>
-      _$TransactionUpdateRequestFromJson(json);
+  factory TransactionUpdateRequest.fromJson(Map<String, dynamic> json) => _$TransactionUpdateRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionUpdateRequestToJson(this);
 }
@@ -71,8 +69,7 @@ class DeleteTransactionRequest {
     required this.userId,
   });
 
-  factory DeleteTransactionRequest.fromJson(Map<String, dynamic> json) =>
-      _$DeleteTransactionRequestFromJson(json);
+  factory DeleteTransactionRequest.fromJson(Map<String, dynamic> json) => _$DeleteTransactionRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$DeleteTransactionRequestToJson(this);
 }

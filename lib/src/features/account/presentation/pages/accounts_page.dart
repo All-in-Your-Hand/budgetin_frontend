@@ -79,8 +79,7 @@ class _AccountsPageState extends State<AccountsPage> {
                   }
 
                   return GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,

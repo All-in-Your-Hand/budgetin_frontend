@@ -1,7 +1,7 @@
 import 'package:budgetin_frontend/src/features/account/presentation/widgets/account_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../common/presentation/widgets/app_scaffold.dart';
+import '../../../../shared/presentation/widgets/app_scaffold.dart';
 import '../providers/account_provider.dart';
 import '../widgets/account_card.dart';
 import '../../../../core/utils/constant/network_constants.dart';

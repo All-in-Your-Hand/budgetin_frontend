@@ -1,8 +1,10 @@
+import 'package:budgetin_frontend/src/features/account/presentation/widgets/account_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../common/presentation/widgets/app_scaffold.dart';
 import '../providers/account_provider.dart';
 import '../widgets/account_card.dart';
+import '../../../../core/utils/constant/network_constants.dart';
 
 /// The accounts page that displays user's financial accounts.
 class AccountsPage extends StatefulWidget {
@@ -19,7 +21,7 @@ class _AccountsPageState extends State<AccountsPage> {
     super.initState();
     // TODO: Replace with actual user ID from auth provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AccountProvider>().getAccounts('current_user_id');
+      context.read<AccountProvider>().getAccounts(NetworkConstants.testUserId);
     });
   }
 
@@ -42,9 +44,7 @@ class _AccountsPageState extends State<AccountsPage> {
                   style: theme.textTheme.headlineMedium,
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement add account functionality
-                  },
+                  onPressed: () => AccountDialog.show(context),
                   icon: const Icon(Icons.add),
                   label: const Text('Add Account'),
                 ),

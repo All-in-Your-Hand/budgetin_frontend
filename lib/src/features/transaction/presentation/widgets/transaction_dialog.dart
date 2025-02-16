@@ -307,7 +307,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
       value: _accountController.text.isEmpty ? null : _accountController.text,
       items: accountProvider.accounts.map((account) {
         return DropdownMenuItem(
-          value: account.accountId,
+          value: account.id,
           child: Text(
               '${account.accountName} (Balance: €${account.balance.toStringAsFixed(2)})'),
         );

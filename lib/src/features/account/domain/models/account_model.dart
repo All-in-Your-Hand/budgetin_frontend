@@ -7,7 +7,7 @@ part 'account_model.g.dart';
 class AccountModel {
   /// The unique identifier of the account
   @JsonKey(name: 'id')
-  final String accountId;
+  final String id;
 
   /// The ID of the user who owns this account
   @JsonKey(name: 'userId')
@@ -23,7 +23,7 @@ class AccountModel {
 
   /// Creates a new [AccountModel] instance
   const AccountModel({
-    required this.accountId,
+    required this.id,
     required this.userId,
     required this.accountName,
     required this.balance,

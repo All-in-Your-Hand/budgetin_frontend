@@ -49,4 +49,73 @@ class AccountProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  /// Add a new account
+  Future<bool> addAccount(AddAccountRequest request) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _repository.addAccount(request);
+
+    result.fold(
+      (failure) {
+        _error = failure.message;
+      },
+      (success) {
+        _error = null;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return result.isRight();
+  }
+
+  /// Update an existing account
+  Future<bool> updateAccount(AccountUpdateRequest request) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _repository.updateAccount(request);
+
+    result.fold(
+      (failure) {
+        _error = failure.message;
+      },
+      (success) {
+        _error = null;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return result.isRight();
+  }
+
+  /// Delete an account
+  Future<bool> deleteAccount(String accountId) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final request = DeleteAccountRequest(accountId: accountId);
+
+    final result = await _repository.deleteAccount(request);
+
+    result.fold(
+      (failure) {
+        _error = failure.message;
+      },
+      (success) {
+        _error = null;
+        _accounts.removeWhere((account) => account.id == accountId);
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return result.isRight();
+  }
 }

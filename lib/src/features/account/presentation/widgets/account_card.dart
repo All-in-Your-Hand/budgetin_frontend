@@ -1,4 +1,7 @@
+import 'package:budgetin_frontend/src/features/account/presentation/providers/account_provider.dart';
+import 'package:budgetin_frontend/src/features/account/presentation/widgets/account_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../domain/models/account_model.dart';
 
 /// A card widget that displays account information
@@ -20,7 +23,7 @@ class AccountCard extends StatelessWidget {
       elevation: 2,
       child: InkWell(
         onTap: () {
-          // TODO: Implement account details/edit functionality
+          AccountDialog.show(context, account: account);
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -49,7 +52,13 @@ class AccountCard extends StatelessWidget {
                       ),
                     ],
                     onSelected: (value) {
-                      // TODO: Implement edit and delete functionality
+                      if (value == 'edit') {
+                        AccountDialog.show(context, account: account);
+                      } else if (value == 'delete') {
+                        context
+                            .read<AccountProvider>()
+                            .deleteAccount(account.id);
+                      }
                     },
                   ),
                 ],

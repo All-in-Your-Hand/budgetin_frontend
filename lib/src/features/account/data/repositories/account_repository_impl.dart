@@ -17,8 +17,41 @@ class AccountRepositoryImpl implements AccountRepository {
   Future<Either<NetworkException, List<AccountModel>>> getAccounts(
       AccountRequest request) async {
     try {
-      final result = await _remoteDataSource.getAccounts(request);
-      return Right(result.accounts);
+      final response = await _remoteDataSource.getAccounts(request);
+      return Right(response.accounts);
+    } on NetworkException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, String>> addAccount(
+      AddAccountRequest request) async {
+    try {
+      final response = await _remoteDataSource.addAccount(request);
+      return Right(response);
+    } on NetworkException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, String>> updateAccount(
+      AccountUpdateRequest request) async {
+    try {
+      final response = await _remoteDataSource.updateAccount(request);
+      return Right(response);
+    } on NetworkException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, String>> deleteAccount(
+      DeleteAccountRequest request) async {
+    try {
+      final response = await _remoteDataSource.deleteAccount(request);
+      return Right(response);
     } on NetworkException catch (e) {
       return Left(e);
     }

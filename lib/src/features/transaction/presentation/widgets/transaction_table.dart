@@ -48,7 +48,7 @@ class _TransactionTableView extends StatelessWidget {
   /// It's used for both displaying and sorting the account column.
   String _getAccountName(String accountId, AccountProvider accountProvider) {
     return accountProvider.accounts
-            .where((account) => account.accountId == accountId)
+            .where((account) => account.id == accountId)
             .map((account) => account.accountName)
             .firstOrNull ??
         '(Deleted Account)';

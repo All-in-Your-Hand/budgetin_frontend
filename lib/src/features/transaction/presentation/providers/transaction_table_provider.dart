@@ -176,6 +176,14 @@ class TransactionTableProvider extends ChangeNotifier {
     _filteredTransactions.sort((a, b) {
       final aValue = _currentSortField!(a);
       final bValue = _currentSortField!(b);
+
+      // Special handling for string comparisons (like the "To" field)
+      if (aValue is String && bValue is String) {
+        return _sortAscending
+            ? aValue.toLowerCase().compareTo(bValue.toLowerCase())
+            : bValue.toLowerCase().compareTo(aValue.toLowerCase());
+      }
+
       return _sortAscending ? Comparable.compare(aValue, bValue) : Comparable.compare(bValue, aValue);
     });
   }

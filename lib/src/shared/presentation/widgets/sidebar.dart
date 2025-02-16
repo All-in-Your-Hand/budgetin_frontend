@@ -37,13 +37,15 @@ class Sidebar extends StatelessWidget {
                   children: [
                     if (!isCollapsed)
                       Expanded(
-                        child: Text(
-                          'BudgetIn',
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontFamily: 'Cursive',
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                          overflow: TextOverflow.ellipsis,
+                        child: Center(
+                          child: Text(
+                            'BudgetIn',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                  fontFamily: 'Cursive',
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     AnimatedRotation(

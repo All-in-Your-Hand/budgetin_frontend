@@ -17,57 +17,72 @@ class AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Card(
       elevation: 2,
       child: InkWell(
         onTap: () {
           AccountDialog.show(context, account: account);
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final theme = Theme.of(context);
+            // Calculate constrained font sizes
+            final titleSize = (constraints.maxWidth * 0.05).clamp(12.0, 16.0);
+            final balanceSize = (constraints.maxWidth * 0.08).clamp(16.0, 24.0);
+
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      account.accountName,
-                      style: theme.textTheme.titleMedium,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Text('Edit'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          account.accountName,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontSize: titleSize,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Text('Delete'),
+                      PopupMenuButton<String>(
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            AccountDialog.show(context, account: account);
+                          } else if (value == 'delete') {
+                            context.read<AccountProvider>().deleteAccount(account.id);
+                          }
+                        },
                       ),
                     ],
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        AccountDialog.show(context, account: account);
-                      } else if (value == 'delete') {
-                        context.read<AccountProvider>().deleteAccount(account.id);
-                      }
-                    },
+                  ),
+                  const Spacer(),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '\$${account.balance.toStringAsFixed(2)}',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontSize: balanceSize,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const Spacer(),
-              Text(
-                '\$${account.balance.toStringAsFixed(2)}',
-                style: theme.textTheme.headlineSmall,
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

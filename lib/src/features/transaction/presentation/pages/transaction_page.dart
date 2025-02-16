@@ -45,19 +45,6 @@ class _TransactionPageState extends State<TransactionPage> {
     return AppScaffold(
       currentIndex: 1,
       body: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Transaction History',
-            semanticsLabel: 'Transactions Page Title',
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _fetchData,
-              tooltip: 'Refresh Transactions',
-            ),
-          ],
-        ),
         body: Consumer<TransactionProvider>(
           builder: (context, provider, _) {
             if (provider.isLoading) {

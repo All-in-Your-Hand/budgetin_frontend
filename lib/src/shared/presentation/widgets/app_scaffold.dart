@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 import '../providers/sidebar_provider.dart';
+import '../providers/right_sidebar_provider.dart';
 import 'sidebar.dart';
+import 'right_sidebar.dart';
 
 /// A scaffold widget that provides the main layout structure for the app.
 class AppScaffold extends StatelessWidget {
@@ -20,8 +23,11 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SidebarProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: GetIt.I<SidebarProvider>()),
+        ChangeNotifierProvider.value(value: GetIt.I<RightSidebarProvider>()),
+      ],
       child: Scaffold(
         body: Row(
           children: [
@@ -29,6 +35,7 @@ class AppScaffold extends StatelessWidget {
             Expanded(
               child: body,
             ),
+            const RightSidebar(),
           ],
         ),
       ),

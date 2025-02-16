@@ -1,0 +1,392 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../../features/transaction/domain/models/transaction_request.dart';
+import '../../../features/transaction/presentation/providers/transaction_provider.dart';
+import '../../../features/account/presentation/providers/account_provider.dart';
+import '../../../core/utils/constant/network_constants.dart';
+import '../providers/right_sidebar_provider.dart';
+
+class RightSidebar extends StatefulWidget {
+  const RightSidebar({Key? key}) : super(key: key);
+
+  @override
+  State<RightSidebar> createState() => _RightSidebarState();
+}
+
+class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderStateMixin {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _dateController;
+  late final TextEditingController _toController;
+  late final TextEditingController _categoryController;
+  late final TextEditingController _accountController;
+  late final TextEditingController _amountController;
+  late final TextEditingController _typeController;
+  late final TextEditingController _notesController;
+  late final AnimationController _animationController;
+  late final Animation<double> _animation;
+
+  // Transaction categories
+  static const _categories = [
+    'HOUSING',
+    'GROCERY',
+    'TRANSPORTATION',
+    'HEALTHCARE',
+    'DINING',
+    'SALARY',
+    'OTHER',
+  ];
+
+  // Transaction types
+  static const _transactionTypes = [
+    'EXPENSE',
+    'INCOME',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController(
+      text: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+    );
+    _toController = TextEditingController();
+    _categoryController = TextEditingController();
+    _accountController = TextEditingController();
+    _amountController = TextEditingController();
+    _typeController = TextEditingController();
+    _notesController = TextEditingController();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    _toController.dispose();
+    _categoryController.dispose();
+    _accountController.dispose();
+    _amountController.dispose();
+    _typeController.dispose();
+    _notesController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _clearForm() {
+    _formKey.currentState?.reset();
+    _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    _toController.clear();
+    _categoryController.clear();
+    _accountController.clear();
+    _amountController.clear();
+    _typeController.clear();
+    _notesController.clear();
+  }
+
+  Future<void> _handleSubmit(BuildContext context, TransactionProvider provider) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final dateParts = _dateController.text.split('/');
+    final selectedDate = DateTime(
+      int.parse(dateParts[2]), // year
+      int.parse(dateParts[1]), // month
+      int.parse(dateParts[0]), // day
+    );
+
+    final request = TransactionRequest(
+      userId: NetworkConstants.testUserId,
+      accountId: _accountController.text,
+      transactionType: _typeController.text,
+      transactionCategory: _categoryController.text,
+      transactionAmount: double.parse(_amountController.text),
+      transactionDate: selectedDate,
+      description: _notesController.text,
+      to: _toController.text,
+    );
+
+    final success = await provider.addTransaction(request);
+
+    if (success) {
+      await provider.fetchTransactions(NetworkConstants.testUserId);
+      if (context.mounted) {
+        _clearForm();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Transaction added successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(provider.error ?? 'Failed to add transaction'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<RightSidebarProvider>(
+      builder: (context, rightSidebarProvider, _) {
+        if (rightSidebarProvider.isExpanded) {
+          _animationController.forward();
+        } else {
+          _animationController.reverse();
+        }
+
+        return Row(
+          children: [
+            Material(
+              child: InkWell(
+                onTap: rightSidebarProvider.toggleExpanded,
+                child: Container(
+                  width: 24,
+                  height: double.infinity,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    rightSidebarProvider.isExpanded ? Icons.chevron_right : Icons.chevron_left,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+            SizeTransition(
+              axis: Axis.horizontal,
+              sizeFactor: _animation,
+              child: Container(
+                width: 320,
+                color: Theme.of(context).colorScheme.surface,
+                child: Consumer2<TransactionProvider, AccountProvider>(
+                  builder: (context, transactionProvider, accountProvider, _) {
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight,
+                            ),
+                            child: IntrinsicHeight(
+                              child: Center(
+                                child: SizedBox(
+                                  width: 280,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                    child: Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Add Transaction',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          _buildDateField(context),
+                                          const SizedBox(height: 16),
+                                          _buildToField(),
+                                          const SizedBox(height: 16),
+                                          _buildCategoryField(transactionProvider),
+                                          const SizedBox(height: 16),
+                                          _buildAccountField(accountProvider, transactionProvider),
+                                          const SizedBox(height: 16),
+                                          _buildAmountField(transactionProvider),
+                                          const SizedBox(height: 16),
+                                          _buildTypeField(transactionProvider),
+                                          const SizedBox(height: 16),
+                                          _buildNotesField(),
+                                          const SizedBox(height: 24),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () => _handleSubmit(context, transactionProvider),
+                                              child: const Text('Add Transaction'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDateField(BuildContext context) {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'Date *',
+        border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.calendar_today),
+      ),
+      controller: _dateController,
+      readOnly: true,
+      validator: (value) => context.read<TransactionProvider>().validateDate(value),
+      onTap: () async {
+        final currentParts = _dateController.text.split('/');
+        final currentDate = DateTime(
+          int.parse(currentParts[2]),
+          int.parse(currentParts[1]),
+          int.parse(currentParts[0]),
+        );
+
+        final DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: currentDate,
+          firstDate: DateTime(2000),
+          lastDate: DateTime.now().add(const Duration(days: 365)),
+        );
+
+        if (picked != null) {
+          _dateController.text = DateFormat('dd/MM/yyyy').format(picked);
+        }
+      },
+    );
+  }
+
+  Widget _buildToField() {
+    return TextField(
+      decoration: const InputDecoration(
+        labelText: 'To (Optional)',
+        border: OutlineInputBorder(),
+      ),
+      controller: _toController,
+      maxLength: 30,
+    );
+  }
+
+  Widget _buildCategoryField(TransactionProvider provider) {
+    return DropdownButtonFormField<String>(
+      isExpanded: true,
+      decoration: const InputDecoration(
+        labelText: 'Category *',
+        border: OutlineInputBorder(),
+      ),
+      value: _categoryController.text.isEmpty ? null : _categoryController.text,
+      items: _categories.map((category) {
+        return DropdownMenuItem(
+          value: category,
+          child: Text(
+            category,
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).toList(),
+      validator: (value) => provider.validateCategory(value),
+      onChanged: (value) {
+        if (value != null) {
+          _categoryController.text = value;
+        }
+      },
+    );
+  }
+
+  Widget _buildAccountField(AccountProvider accountProvider, TransactionProvider provider) {
+    return DropdownButtonFormField<String>(
+      isExpanded: true,
+      decoration: const InputDecoration(
+        labelText: 'From Account *',
+        border: OutlineInputBorder(),
+      ),
+      value: _accountController.text.isEmpty ? null : _accountController.text,
+      items: accountProvider.accounts.map((account) {
+        return DropdownMenuItem(
+          value: account.id,
+          child: Text(
+            '${account.accountName} (€${account.balance.toStringAsFixed(2)})',
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).toList(),
+      validator: (value) => provider.validateAccount(value),
+      onChanged: (value) {
+        if (value != null) {
+          _accountController.text = value;
+        }
+      },
+    );
+  }
+
+  Widget _buildAmountField(TransactionProvider provider) {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'Amount *',
+        border: OutlineInputBorder(),
+        prefixText: '€ ',
+      ),
+      controller: _amountController,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+      ],
+      validator: (value) => provider.validateAmount(value),
+    );
+  }
+
+  Widget _buildTypeField(TransactionProvider provider) {
+    return DropdownButtonFormField<String>(
+      isExpanded: true,
+      decoration: const InputDecoration(
+        labelText: 'Transaction Type *',
+        border: OutlineInputBorder(),
+      ),
+      value: _typeController.text.isEmpty ? null : _typeController.text,
+      items: _transactionTypes.map((type) {
+        return DropdownMenuItem(
+          value: type,
+          child: Text(
+            type,
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).toList(),
+      validator: (value) => provider.validateTransactionType(value),
+      onChanged: (value) {
+        if (value != null) {
+          _typeController.text = value;
+        }
+      },
+    );
+  }
+
+  Widget _buildNotesField() {
+    return TextField(
+      decoration: const InputDecoration(
+        labelText: 'Notes (Optional)',
+        border: OutlineInputBorder(),
+        counterText: '',
+      ),
+      controller: _notesController,
+      maxLines: 3,
+      maxLength: 150,
+    );
+  }
+}

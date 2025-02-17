@@ -104,10 +104,14 @@ class _TransactionDialogState extends State<TransactionDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     final dateParts = _dateController.text.split('/');
+    final now = DateTime.now();
     final selectedDate = DateTime(
       int.parse(dateParts[2]), // year
       int.parse(dateParts[1]), // month
       int.parse(dateParts[0]), // day
+      now.hour,
+      now.minute,
+      now.second,
     );
 
     bool success;

@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:get_it/get_it.dart';
-import '../providers/sidebar_provider.dart';
-import '../providers/right_sidebar_provider.dart';
 import 'sidebar.dart';
 import 'right_sidebar.dart';
 
@@ -23,21 +19,15 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: GetIt.I<SidebarProvider>()),
-        ChangeNotifierProvider.value(value: GetIt.I<RightSidebarProvider>()),
-      ],
-      child: Scaffold(
-        body: Row(
-          children: [
-            Sidebar(currentIndex: currentIndex),
-            Expanded(
-              child: body,
-            ),
-            const RightSidebar(),
-          ],
-        ),
+    return Scaffold(
+      body: Row(
+        children: [
+          Sidebar(currentIndex: currentIndex),
+          Expanded(
+            child: body,
+          ),
+          const RightSidebar(),
+        ],
       ),
     );
   }

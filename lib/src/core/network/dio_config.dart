@@ -1,8 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../utils/constant/network_constants.dart';
+import '../utils/log/app_logger.dart';
+import '../exceptions/network_exception.dart';
+import 'error/dio_error_handler.dart';
 
+/// Configuration class for setting up Dio HTTP client with custom interceptors and error handling.
+/// This class follows the singleton pattern to ensure only one instance of Dio is created.
 class DioConfig {
+  const DioConfig._();
+
+  /// Creates and configures a new [Dio] instance with default settings and custom interceptors.
+  ///
+  /// Returns a configured [Dio] instance with:
+  /// - Base URL configuration
+  /// - Timeout settings
+  /// - Headers configuration
+  /// - Custom logging interceptors
+  /// - Error handling
   static Dio createDio() {
     final dio = Dio(
       BaseOptions(
@@ -19,33 +34,42 @@ class DioConfig {
       ),
     );
 
-    // Custom interceptor for detailed logging
+    // Custom interceptor for logging and error handling
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
           if (kDebugMode) {
-            print('Sending request to endpoint: ${options.uri}');
-            // print('Request Headers: ${options.headers}');
-            //print('Request Data: ${options.data}');
+            AppLogger.debug(
+              'Request',
+              'Sending request to endpoint: ${options.uri}',
+            );
           }
           handler.next(options);
         },
         onResponse: (response, handler) {
           if (kDebugMode) {
-            print('Response Status Code: ${response.statusCode}');
-            // print('Response Headers: ${response.headers}');
-            // print('Response Data: ${response.data}');
+            AppLogger.debug(
+              'Response',
+              'Status Code: ${response.statusCode}',
+            );
           }
           handler.next(response);
         },
         onError: (error, handler) async {
           if (kDebugMode) {
-            print('Error: ${error.message}');
-            print('Error Type: ${error.type}');
-            print('Error Status Code: ${error.response?.statusCode}');
-            print('Error Response: ${error.response?.data}');
+            AppLogger.error(
+              'Network Error',
+              'Type: ${error.type}\nStatus: ${error.response?.statusCode}\nMessage: ${handleDioError(error)}',
+            );
           }
-          handler.next(error);
+
+          // Transform DioException into our custom NetworkException
+          final networkError = NetworkException(
+            message: handleDioError(error),
+            statusCode: error.response?.statusCode,
+          );
+
+          handler.reject(error.copyWith(error: networkError));
         },
       ),
     );

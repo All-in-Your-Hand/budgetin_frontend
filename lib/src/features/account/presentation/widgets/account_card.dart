@@ -46,15 +46,17 @@ class AccountCard extends StatelessWidget {
                             fontSize: titleSize,
                           ),
                           overflow: TextOverflow.ellipsis,
+                          semanticsLabel: 'Account name: ${account.accountName}',
                         ),
                       ),
                       PopupMenuButton<String>(
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
+                        tooltip: 'Account options',
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(
                             value: 'edit',
                             child: Text('Edit'),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'delete',
                             child: Text('Delete'),
                           ),
@@ -77,6 +79,7 @@ class AccountCard extends StatelessWidget {
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontSize: balanceSize,
                       ),
+                      semanticsLabel: 'Balance: ${account.balance.toStringAsFixed(2)} dollars',
                     ),
                   ),
                 ],

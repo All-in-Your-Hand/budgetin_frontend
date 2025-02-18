@@ -4,8 +4,18 @@ import 'data/data_sources/remote/transaction_remote_data_source.dart';
 import 'data/repositories/transaction_repository_impl.dart';
 import 'domain/repositories/transaction_repository.dart';
 import 'presentation/providers/transaction_provider.dart';
+import 'presentation/providers/transaction_table_provider.dart';
+import '../../core/utils/log/app_logger.dart';
 
-/// Sets up all transaction-related dependencies
+/// Sets up all transaction-related dependencies in the dependency injection container.
+///
+/// This function registers:
+/// - Remote data sources for transaction operations
+/// - Transaction repository implementation
+/// - Transaction provider for state management
+/// - Transaction table provider for table UI state management
+///
+/// Throws an exception if registration fails.
 void setupTransactionInjections() {
   try {
     final getIt = GetIt.instance;
@@ -30,19 +40,33 @@ void setupTransactionInjections() {
         repository: getIt(),
       ),
     );
+
+    // Table provider for managing table-specific state
+    getIt.registerFactory(
+      () => TransactionTableProvider(),
+    );
   } catch (e) {
-    print('Error setting up transaction injections: $e');
+    AppLogger.error('TransactionInjections', 'Error setting up transaction injections: $e');
     rethrow;
   }
 }
 
-/// Returns all providers needed for transaction management
+/// Returns a list of all providers needed for transaction management.
+///
+/// This includes:
+/// - TransactionProvider for managing transaction state
+/// - TransactionTableProvider for managing table UI state
+///
+/// @return List of ChangeNotifierProvider instances configured for transaction management
 List<ChangeNotifierProvider> getTransactionProviders() {
   final getIt = GetIt.instance;
 
   return [
     ChangeNotifierProvider<TransactionProvider>(
       create: (_) => getIt<TransactionProvider>(),
+    ),
+    ChangeNotifierProvider<TransactionTableProvider>(
+      create: (_) => getIt<TransactionTableProvider>(),
     ),
   ];
 }

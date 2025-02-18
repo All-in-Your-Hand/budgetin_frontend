@@ -19,9 +19,9 @@ class AccountDialog extends StatefulWidget {
   /// If [account] is provided, the dialog will be in edit mode and pre-fill
   /// all fields with the account's data. Otherwise, it will be in creation mode.
   const AccountDialog({
-    Key? key,
+    super.key,
     this.account,
-  }) : super(key: key);
+  });
 
   /// Shows the dialog for adding or editing an account.
   ///
@@ -31,6 +31,7 @@ class AccountDialog extends StatefulWidget {
     if (context.mounted) {
       await showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AccountDialog(account: account),
       );
     }
@@ -65,49 +66,74 @@ class _AccountDialogState extends State<AccountDialog> {
   }
 
   Future<void> _handleSubmit(BuildContext context, AccountProvider provider) async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final request = widget.account != null
-        ? AccountUpdateRequest(
-            account: AccountModel(
-              id: widget.account!.id,
-              userId: NetworkConstants.testUserId,
-              accountName: _accountNameController.text,
-              balance: double.parse(_balanceController.text),
-            ),
-          )
-        : AddAccountRequest(
-            userId: NetworkConstants.testUserId,
-            accountName: _accountNameController.text,
-            balance: double.parse(_balanceController.text),
-          );
-
-    bool success;
-    if (widget.account != null) {
-      success = await provider.updateAccount(request as AccountUpdateRequest);
-    } else {
-      success = await provider.addAccount(request as AddAccountRequest);
+    if (!_formKey.currentState!.validate()) {
+      // Announce validation errors to screen readers
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fix the errors in the form'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
     }
 
-    if (success) {
-      await provider.getAccounts(NetworkConstants.testUserId);
-      if (context.mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
+    try {
+      final request = widget.account != null
+          ? UpdateAccountRequest(
+              account: AccountModel(
+                id: widget.account!.id,
+                userId: NetworkConstants.testUserId,
+                accountName: _accountNameController.text.trim(),
+                balance: double.parse(_balanceController.text),
+              ),
+            )
+          : AddAccountRequest(
+              userId: NetworkConstants.testUserId,
+              accountName: _accountNameController.text.trim(),
+              balance: double.parse(_balanceController.text),
+            );
+
+      bool success;
+      if (widget.account != null) {
+        success = await provider.updateAccount(request as UpdateAccountRequest);
+      } else {
+        success = await provider.addAccount(request as AddAccountRequest);
       }
-    } else {
-      if (context.mounted) {
+
+      if (success) {
+        await provider.getAccounts(NetworkConstants.testUserId);
+        if (context.mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
+                semanticsLabel:
+                    widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               provider.error ?? 'Failed to ${widget.account != null ? 'update' : 'add'} account',
+              semanticsLabel: provider.error ?? 'Failed to ${widget.account != null ? 'update' : 'add'} account',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'An unexpected error occurred',
+              semanticsLabel: 'An unexpected error occurred',
             ),
             backgroundColor: Colors.red,
           ),
@@ -133,19 +159,25 @@ class _AccountDialogState extends State<AccountDialog> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.account != null ? 'Edit Account' : 'Add Account',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      widget.account != null ? 'Edit Account' : 'Add Account',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _buildAccountNameField(provider),
+                  _AccountNameField(controller: _accountNameController),
                   const SizedBox(height: 16),
-                  _buildBalanceField(provider),
+                  _BalanceField(controller: _balanceController),
                   const SizedBox(height: 24),
-                  _buildActionButtons(context, provider),
+                  _ActionButtons(
+                    isEditMode: widget.account != null,
+                    onSubmit: () => _handleSubmit(context, provider),
+                  ),
                 ],
               ),
             ),
@@ -154,55 +186,93 @@ class _AccountDialogState extends State<AccountDialog> {
       },
     );
   }
+}
 
-  Widget _buildAccountNameField(AccountProvider provider) {
-    return TextFormField(
-      decoration: const InputDecoration(
-        labelText: 'Account Name *',
-        border: OutlineInputBorder(),
+/// A private widget for the account name input field
+class _AccountNameField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const _AccountNameField({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      textField: true,
+      label: 'Account name input field',
+      child: TextFormField(
+        decoration: const InputDecoration(
+          labelText: 'Account Name *',
+          border: OutlineInputBorder(),
+        ),
+        controller: controller,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter an account name';
+          }
+          if (value.length > 30) {
+            return 'Account name must be less than 30 characters';
+          }
+          return null;
+        },
+        autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
-      controller: _accountNameController,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter an account name';
-        }
-        if (value.length > 30) {
-          return 'Account name must be less than 30 characters';
-        }
-        return null;
-      },
     );
   }
+}
 
-  Widget _buildBalanceField(AccountProvider provider) {
-    return TextFormField(
-      decoration: const InputDecoration(
-        labelText: 'Initial Balance *',
-        border: OutlineInputBorder(),
-        prefixText: '€ ',
+/// A private widget for the balance input field
+class _BalanceField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const _BalanceField({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      textField: true,
+      label: 'Initial balance input field',
+      child: TextFormField(
+        decoration: const InputDecoration(
+          labelText: 'Initial Balance *',
+          border: OutlineInputBorder(),
+          prefixText: '€ ',
+        ),
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+        ],
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter an initial balance';
+          }
+          final balance = double.tryParse(value);
+          if (balance == null) {
+            return 'Please enter a valid number';
+          }
+          if (balance < 0) {
+            return 'Balance cannot be negative';
+          }
+          return null;
+        },
+        autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
-      controller: _balanceController,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-      ],
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter an initial balance';
-        }
-        final balance = double.tryParse(value);
-        if (balance == null) {
-          return 'Please enter a valid number';
-        }
-        if (balance < 0) {
-          return 'Balance cannot be negative';
-        }
-        return null;
-      },
     );
   }
+}
 
-  Widget _buildActionButtons(BuildContext context, AccountProvider provider) {
+/// A private widget for the action buttons
+class _ActionButtons extends StatelessWidget {
+  final bool isEditMode;
+  final VoidCallback onSubmit;
+
+  const _ActionButtons({
+    required this.isEditMode,
+    required this.onSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -212,9 +282,9 @@ class _AccountDialogState extends State<AccountDialog> {
         ),
         const SizedBox(width: 8),
         ElevatedButton(
-          onPressed: () => _handleSubmit(context, provider),
+          onPressed: onSubmit,
           child: Text(
-            widget.account != null ? 'Update Account' : 'Add Account',
+            isEditMode ? 'Update Account' : 'Add Account',
           ),
         ),
       ],

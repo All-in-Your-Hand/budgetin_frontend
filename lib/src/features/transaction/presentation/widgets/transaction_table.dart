@@ -74,8 +74,8 @@ class _TransactionTableView extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => transactionProvider
-                      .fetchTransactions(NetworkConstants.testUserId), // TODO: Get from auth provider
+                  onPressed: () =>
+                      transactionProvider.getTransactions(NetworkConstants.testUserId), // TODO: Get from auth provider
                   child: const Text('Retry'),
                 ),
               ],

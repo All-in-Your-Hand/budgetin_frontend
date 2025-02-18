@@ -2,6 +2,10 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction_model.g.dart';
 
+/// A model class representing a financial transaction in the system.
+///
+/// This model contains all the necessary information about a transaction including
+/// its ID, associated user and account, type, category, amount, dates, and other details.
 @JsonSerializable()
 class TransactionModel {
   @JsonKey(name: 'id')

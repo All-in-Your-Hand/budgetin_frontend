@@ -3,7 +3,8 @@ import 'package:dio/dio.dart';
 import '../../../domain/models/auth_request_model.dart';
 import '../../../domain/models/auth_response_model.dart';
 import '../../../../../core/utils/constant/network_constants.dart';
-import '../../../../../core/network/exception/network_exception.dart';
+import '../../../../../core/exceptions/network_exception.dart';
+import '../../../../../core/network/error/dio_error_handler.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> createUser(AuthRequestModel request);
@@ -35,7 +36,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } on DioException catch (e) {
       throw NetworkException(
-        message: e.message ?? 'Failed to create user',
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
       );
     }

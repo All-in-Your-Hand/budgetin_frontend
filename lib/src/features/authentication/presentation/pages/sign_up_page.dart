@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../domain/models/auth_request_model.dart';
 import '../providers/auth_provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -29,11 +30,24 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
-      await context.read<AuthProvider>().signUp(
-            email: _emailController.text,
-            password: _passwordController.text,
-            name: _nameController.text,
-          );
+      final request = AuthRequestModel(
+        email: _emailController.text,
+        password: _passwordController.text,
+        name: _nameController.text,
+      );
+
+      final success = await context.read<AuthProvider>().createUser(request);
+
+      if (success && mounted) {
+        // TODO: Navigate to home page or next screen
+        // For now, just show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sign up successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     }
   }
 
@@ -162,7 +176,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: authProvider.isLoading ? null : _handleSignUp,
-                    child: authProvider.isLoading ? const CircularProgressIndicator() : const Text('Sign Up'),
+                    child: authProvider.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Sign Up'),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

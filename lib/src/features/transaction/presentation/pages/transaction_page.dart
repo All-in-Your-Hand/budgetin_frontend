@@ -12,6 +12,12 @@ import '../widgets/transaction_dialog.dart';
 /// This page automatically fetches and displays transactions for the current user.
 /// It handles loading states and error states appropriately, providing feedback
 /// to the user about the current state of the data.
+///
+/// Key features:
+/// * Automatically fetches transactions on initialization
+/// * Displays transactions in a table format
+/// * Provides error handling and retry functionality
+/// * Allows adding new transactions via FAB
 class TransactionPage extends StatefulWidget {
   /// Creates a new instance of [TransactionPage].
   const TransactionPage({super.key});
@@ -27,14 +33,16 @@ class _TransactionPageState extends State<TransactionPage> {
     _fetchData();
   }
 
-  /// Initiates the transaction fetching process.
+  /// Initiates the transaction and account data fetching process.
   ///
   /// This method is called after the widget is inserted into the widget tree.
+  /// It fetches both transactions and accounts for the current user to ensure
+  /// all necessary data is available for the transaction table.
   void _fetchData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       const userId = NetworkConstants.testUserId; // TODO: Get from auth provider
       if (mounted) {
-        context.read<TransactionProvider>().fetchTransactions(userId);
+        context.read<TransactionProvider>().getTransactions(userId);
         context.read<AccountProvider>().getAccounts(userId);
       }
     });
@@ -81,10 +89,13 @@ class _TransactionPageState extends State<TransactionPage> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => TransactionDialog.show(context),
-          tooltip: 'Add new transaction',
-          child: const Icon(Icons.add),
+        floatingActionButton: Semantics(
+          label: 'Add new transaction button',
+          child: FloatingActionButton(
+            onPressed: () => TransactionDialog.show(context),
+            tooltip: 'Add new transaction',
+            child: const Icon(Icons.add),
+          ),
         ),
       ),
     );

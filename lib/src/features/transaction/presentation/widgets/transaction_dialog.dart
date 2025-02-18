@@ -129,10 +129,11 @@ class _TransactionDialogState extends State<TransactionDialog> {
         to: _toController.text,
       );
 
-      final updateRequest = TransactionUpdateRequest(transaction: updatedTransaction);
-      success = await provider.updateTransaction(widget.transaction!.transactionId, updateRequest);
+      final updateRequest = UpdateTransactionRequest(transaction: updatedTransaction);
+      success = await provider.updateTransaction(updateRequest);
     } else {
-      final request = TransactionRequest(
+      final request = AddTransactionRequest(
+        // TODO: Get from userId from auth provider
         userId: NetworkConstants.testUserId,
         accountId: _accountController.text,
         transactionType: _typeController.text,
@@ -147,7 +148,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
     }
 
     if (success) {
-      await provider.fetchTransactions(NetworkConstants.testUserId);
+      await provider.getTransactions(NetworkConstants.testUserId);
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

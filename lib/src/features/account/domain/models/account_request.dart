@@ -5,21 +5,21 @@ part 'account_request.g.dart';
 
 /// Request model for getting accounts
 @JsonSerializable()
-class AccountRequest {
+class GetAccountRequest {
   /// The ID of the user who owns the account
   @JsonKey(name: 'userId')
   final String userId;
 
-  /// Creates a new [AccountRequest] instance
-  const AccountRequest({
+  /// Creates a new [GetAccountRequest] instance
+  const GetAccountRequest({
     required this.userId,
   });
 
-  /// Creates an [AccountRequest] from JSON map
-  factory AccountRequest.fromJson(Map<String, dynamic> json) => _$AccountRequestFromJson(json);
+  /// Creates an [GetAccountRequest] from JSON map
+  factory GetAccountRequest.fromJson(Map<String, dynamic> json) => _$GetAccountRequestFromJson(json);
 
-  /// Converts this [AccountRequest] to a JSON map
-  Map<String, dynamic> toJson() => _$AccountRequestToJson(this);
+  /// Converts this [GetAccountRequest] to a JSON map
+  Map<String, dynamic> toJson() => _$GetAccountRequestToJson(this);
 }
 
 /// Request model for adding a new account
@@ -37,7 +37,7 @@ class AddAccountRequest {
   @JsonKey(name: 'balance')
   final double balance;
 
-  /// Creates a new [AddAccountRequest] instance
+  /// Creates a new [AddAccountRequest] instance with the specified user ID, account name, and balance
   const AddAccountRequest({
     required this.userId,
     required this.accountName,
@@ -53,21 +53,21 @@ class AddAccountRequest {
 
 /// Request model for updating an account
 @JsonSerializable()
-class AccountUpdateRequest {
+class UpdateAccountRequest {
   /// The account model containing updated information
   @JsonKey(name: 'account')
   final AccountModel account;
 
-  /// Creates a new [AccountUpdateRequest] instance
-  const AccountUpdateRequest({
+  /// Creates a new [UpdateAccountRequest] instance
+  const UpdateAccountRequest({
     required this.account,
   });
 
-  /// Creates an [AccountUpdateRequest] from JSON map
-  factory AccountUpdateRequest.fromJson(Map<String, dynamic> json) => _$AccountUpdateRequestFromJson(json);
+  /// Creates an [UpdateAccountRequest] from JSON map
+  factory UpdateAccountRequest.fromJson(Map<String, dynamic> json) => _$UpdateAccountRequestFromJson(json);
 
-  /// Converts this [AccountUpdateRequest] to a JSON map
-  Map<String, dynamic> toJson() => _$AccountUpdateRequestToJson(this);
+  /// Converts this [UpdateAccountRequest] to a JSON map
+  Map<String, dynamic> toJson() => _$UpdateAccountRequestToJson(this);
 }
 
 /// Request model for deleting an account

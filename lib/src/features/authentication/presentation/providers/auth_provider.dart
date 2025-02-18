@@ -1,45 +1,49 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../../domain/models/auth_request_model.dart';
+import '../../domain/models/auth_response_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 
+/// Provider for managing authentication state
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _repository;
-  bool _isLoading = false;
+  AuthResponseModel? _user;
   String? _error;
+  bool _isLoading = false;
 
+  /// Creates a new [AuthProvider] instance
   AuthProvider({required AuthRepository repository}) : _repository = repository;
 
-  bool get isLoading => _isLoading;
+  /// Current user data
+  AuthResponseModel? get user => _user;
+
+  /// Error message if any
   String? get error => _error;
 
-  Future<void> signUp({
-    required String email,
-    required String password,
-    String? name,
-  }) async {
+  /// Whether authentication is in progress
+  bool get isLoading => _isLoading;
+
+  /// Creates a new user
+  Future<bool> createUser(AuthRequestModel request) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    try {
-      final request = AuthRequestModel(
-        email: email,
-        password: password,
-        name: name,
-      );
+    final result = await _repository.createUser(request);
 
-      // ignore: unused_local_variable
-      final response = await _repository.createUser(request);
-      _isLoading = false;
-      notifyListeners();
+    result.fold(
+      (failure) {
+        _error = failure.message;
+        _user = null;
+      },
+      (user) {
+        _error = null;
+        _user = user;
+      },
+    );
 
-      // Handle successful signup
-      // You might want to store the auth token, navigate to next screen, etc.
-    } catch (e) {
-      _isLoading = false;
-      _error = e.toString();
-      notifyListeners();
-    }
+    _isLoading = false;
+    notifyListeners();
+    return result.isRight();
   }
 
   // Add other auth methods like signIn, signOut, etc.

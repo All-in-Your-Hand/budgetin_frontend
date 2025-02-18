@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/exceptions/network_exception.dart';
 import '../../domain/models/auth_request_model.dart';
 import '../../domain/models/auth_response_model.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -9,12 +11,12 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<AuthResponseModel> createUser(AuthRequestModel request) async {
+  Future<Either<NetworkException, AuthResponseModel>> createUser(AuthRequestModel request) async {
     try {
       final response = await remoteDataSource.createUser(request);
-      return response;
-    } catch (e) {
-      rethrow;
+      return Right(response);
+    } on NetworkException catch (e) {
+      return Left(e);
     }
   }
 }

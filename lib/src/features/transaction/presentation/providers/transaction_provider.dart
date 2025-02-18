@@ -10,7 +10,6 @@ import 'package:budgetin_frontend/src/features/transaction/domain/models/transac
 /// [TransactionRepository] to fetch transaction data.
 class TransactionProvider extends ChangeNotifier {
   final TransactionRepository _repository;
-
   List<TransactionModel> _transactions = [];
   bool _isLoading = false;
   String? _error;
@@ -18,9 +17,7 @@ class TransactionProvider extends ChangeNotifier {
   /// Creates a new instance of [TransactionProvider].
   ///
   /// Requires a [TransactionRepository] instance to handle data operations.
-  TransactionProvider({
-    required TransactionRepository repository,
-  }) : _repository = repository;
+  TransactionProvider({required TransactionRepository repository}) : _repository = repository;
 
   /// The current list of transactions.
   ///
@@ -100,16 +97,11 @@ class TransactionProvider extends ChangeNotifier {
   /// Adds a new transaction to the repository.
   ///
   /// Parameters:
-  ///   - date: The transaction date in dd/MM/yyyy format
-  ///   - to: The recipient of the transaction (optional)
-  ///   - category: The transaction category
-  ///   - account: The account from which the transaction was made
-  ///   - amount: The transaction amount as a string
-  ///   - type: The type of transaction (expense/income)
-  ///   - notes: Additional notes about the transaction (optional)
+  ///   - request: The [AddTransactionRequest] containing transaction details
   ///
-  /// Returns a Future that completes when the transaction is added.
-  Future<bool> addTransaction(TransactionRequest request) async {
+  /// Returns a Future that completes with true if the transaction was added successfully,
+  /// false otherwise.
+  Future<bool> addTransaction(AddTransactionRequest request) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -139,12 +131,12 @@ class TransactionProvider extends ChangeNotifier {
   /// Updates the provider state and notifies listeners of any changes.
   /// Sets [isLoading] while the operation is in progress and updates
   /// either [transactions] or [error] based on the result.
-  Future<void> fetchTransactions(String userId) async {
+  Future<void> getTransactions(String userId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    final result = await _repository.getTransactions(userId);
+    final result = await _repository.getTransactions(GetTransactionRequest(userId: userId));
 
     result.fold(
       (failure) {
@@ -166,13 +158,14 @@ class TransactionProvider extends ChangeNotifier {
   ///   - transactionId: The unique identifier of the transaction to update
   ///   - request: The updated transaction request
   ///
-  /// Returns a Future that completes when the transaction is updated.
-  Future<bool> updateTransaction(String transactionId, TransactionUpdateRequest request) async {
+  /// Returns a Future that completes with true if the update was successful,
+  /// false otherwise.
+  Future<bool> updateTransaction(UpdateTransactionRequest request) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    final result = await _repository.updateTransaction(transactionId, request);
+    final result = await _repository.updateTransaction(request);
 
     result.fold(
       (failure) {

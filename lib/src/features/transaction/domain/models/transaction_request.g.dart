@@ -6,8 +6,9 @@ part of 'transaction_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TransactionRequest _$TransactionRequestFromJson(Map<String, dynamic> json) =>
-    TransactionRequest(
+AddTransactionRequest _$AddTransactionRequestFromJson(
+        Map<String, dynamic> json) =>
+    AddTransactionRequest(
       userId: json['userId'] as String,
       accountId: json['accountId'] as String,
       transactionType: json['transactionType'] as String,
@@ -18,7 +19,8 @@ TransactionRequest _$TransactionRequestFromJson(Map<String, dynamic> json) =>
       to: json['to'] as String,
     );
 
-Map<String, dynamic> _$TransactionRequestToJson(TransactionRequest instance) =>
+Map<String, dynamic> _$AddTransactionRequestToJson(
+        AddTransactionRequest instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'accountId': instance.accountId,
@@ -26,20 +28,32 @@ Map<String, dynamic> _$TransactionRequestToJson(TransactionRequest instance) =>
       'transactionCategory': instance.transactionCategory,
       'transactionAmount': instance.transactionAmount,
       'transactionDate':
-          TransactionRequest._dateToJson(instance.transactionDate),
+          AddTransactionRequest._dateToJson(instance.transactionDate),
       'description': instance.description,
       'to': instance.to,
     };
 
-TransactionUpdateRequest _$TransactionUpdateRequestFromJson(
+GetTransactionRequest _$GetTransactionRequestFromJson(
         Map<String, dynamic> json) =>
-    TransactionUpdateRequest(
+    GetTransactionRequest(
+      userId: json['userId'] as String,
+    );
+
+Map<String, dynamic> _$GetTransactionRequestToJson(
+        GetTransactionRequest instance) =>
+    <String, dynamic>{
+      'userId': instance.userId,
+    };
+
+UpdateTransactionRequest _$UpdateTransactionRequestFromJson(
+        Map<String, dynamic> json) =>
+    UpdateTransactionRequest(
       transaction: TransactionModel.fromJson(
           json['transaction'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$TransactionUpdateRequestToJson(
-        TransactionUpdateRequest instance) =>
+Map<String, dynamic> _$UpdateTransactionRequestToJson(
+        UpdateTransactionRequest instance) =>
     <String, dynamic>{
       'transaction': instance.transaction,
     };

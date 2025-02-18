@@ -1,51 +1,52 @@
 import 'package:dio/dio.dart';
-import '../../../../../core/network/exception/network_exception.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../../core/exceptions/network_exception.dart';
 import '../../../../../core/utils/constant/network_constants.dart';
 import '../../../domain/models/transaction_response.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
+import 'package:budgetin_frontend/src/core/network/error/dio_error_handler.dart';
 
+/// Remote data source interface for transaction-related API operations.
+/// Handles all network requests related to transaction management including
+/// fetching, creating, updating and deleting transactions.
 abstract class TransactionRemoteDataSource {
-  Future<String> addTransaction(TransactionRequest request);
-  Future<TransactionResponse> getTransactions(String userId);
-  Future<String> updateTransaction(String transactionId, TransactionUpdateRequest request);
-  Future<String> deleteTransaction(DeleteTransactionRequest request);
+  /// Creates a new transaction with the provided details.
+  ///
+  /// Returns [Either] with success message on success or [NetworkException] on failure.
+  /// [request] contains the new transaction details.
+  Future<Either<NetworkException, String>> addTransaction(AddTransactionRequest request);
+
+  /// Retrieves all transactions associated with the specified user.
+  ///
+  /// Returns [Either] with [TransactionResponse] on success or [NetworkException] on failure.
+  /// [request] contains the parameters for fetching transactions.
+  Future<Either<NetworkException, TransactionResponse>> getTransactions(GetTransactionRequest request);
+
+  /// Updates an existing transaction with new information.
+  ///
+  /// Returns [Either] with success message on success or [NetworkException] on failure.
+  /// [request] contains the transaction update information including the transaction ID.
+  Future<Either<NetworkException, String>> updateTransaction(UpdateTransactionRequest request);
+
+  /// Deletes an existing transaction.
+  ///
+  /// Returns [Either] with success message on success or [NetworkException] on failure.
+  /// [request] contains the transaction identifier to be deleted.
+  Future<Either<NetworkException, String>> deleteTransaction(DeleteTransactionRequest request);
 }
 
-/// Remote data source for transaction-related API calls
+/// Implementation of [TransactionRemoteDataSource] that handles actual API calls
+/// using Dio HTTP client.
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   final Dio _dio;
 
-  /// Creates a new [TransactionRemoteDataSource] instance
+  /// Creates a new [TransactionRemoteDataSourceImpl] instance with required dependencies.
+  ///
+  /// [dio] The Dio HTTP client instance for making API requests.
   TransactionRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
-  /// Get all transactions for a user from the API
   @override
-  Future<TransactionResponse> getTransactions(String userId) async {
-    try {
-      final response = await _dio.get(
-        NetworkConstants.getTransactionsByUserId(
-            //TODO: change to REAL userId
-            NetworkConstants.testUserId),
-      );
-
-      if (response.statusCode == 200) {
-        return TransactionResponse.fromJson(response.data);
-      } else {
-        throw NetworkException(
-          message: 'Failed to fetch transactions',
-          statusCode: response.statusCode,
-        );
-      }
-    } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to fetch transactions',
-        statusCode: e.response?.statusCode,
-      );
-    }
-  }
-
-  @override
-  Future<String> addTransaction(TransactionRequest request) async {
+  Future<Either<NetworkException, String>> addTransaction(AddTransactionRequest request) async {
     try {
       final response = await _dio.post(
         NetworkConstants.transactionEndpoint,
@@ -53,23 +54,46 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        return response.data['message'] as String;
+        return Right(response.data['message'] as String);
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to add transaction',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to add transaction',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 
   @override
-  Future<String> updateTransaction(String transactionId, TransactionUpdateRequest request) async {
+  Future<Either<NetworkException, TransactionResponse>> getTransactions(GetTransactionRequest request) async {
+    try {
+      final response = await _dio.get(
+        NetworkConstants.getTransactionsByUserId(request.userId),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 302) {
+        return Right(TransactionResponse.fromJson(response.data));
+      } else {
+        return Left(NetworkException(
+          message: 'Failed to fetch transactions',
+          statusCode: response.statusCode,
+        ));
+      }
+    } on DioException catch (e) {
+      return Left(NetworkException(
+        message: handleDioError(e),
+        statusCode: e.response?.statusCode,
+      ));
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, String>> updateTransaction(UpdateTransactionRequest request) async {
     try {
       final response = await _dio.put(
         NetworkConstants.transactionEndpoint,
@@ -77,23 +101,23 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        return response.data['message'] as String;
+        return Right(response.data['message'] as String);
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to update transaction',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to update transaction',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 
   @override
-  Future<String> deleteTransaction(DeleteTransactionRequest request) async {
+  Future<Either<NetworkException, String>> deleteTransaction(DeleteTransactionRequest request) async {
     try {
       final response = await _dio.delete(
         NetworkConstants.transactionEndpoint,
@@ -101,18 +125,18 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        return response.data['message'] as String;
+        return Right(response.data['message'] as String);
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to delete transaction',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to delete transaction',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 }

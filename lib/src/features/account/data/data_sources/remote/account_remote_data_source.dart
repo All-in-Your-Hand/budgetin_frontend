@@ -1,59 +1,75 @@
+import 'package:budgetin_frontend/src/core/network/error/dio_error_handler.dart';
 import 'package:budgetin_frontend/src/features/account/domain/models/account_response.dart';
 import 'package:dio/dio.dart';
-import 'package:budgetin_frontend/src/core/network/exception/network_exception.dart';
+import 'package:budgetin_frontend/src/core/exceptions/network_exception.dart';
 import 'package:budgetin_frontend/src/core/utils/constant/network_constants.dart';
 import 'package:budgetin_frontend/src/features/account/domain/models/account_request.dart';
+import 'package:dartz/dartz.dart';
 
-/// Remote data source interface for account-related API calls
+/// Remote data source interface for account-related API operations.
+/// Handles all network requests related to account management including
+/// fetching, creating, updating and deleting accounts.
 abstract class AccountRemoteDataSource {
-  /// Get all accounts for a user from the API
-  Future<AccountResponse> getAccounts(AccountRequest request);
+  /// Retrieves all accounts associated with the current user.
+  ///
+  /// Returns [Either] with [AccountResponse] on success or [NetworkException] on failure.
+  /// [request] contains the parameters needed for the API call.
+  Future<Either<NetworkException, AccountResponse>> getAccounts(GetAccountRequest request);
 
-  /// Add a new account via the API
-  Future<String> addAccount(AddAccountRequest request);
+  /// Creates a new account with the provided details.
+  ///
+  /// Returns [Either] with success message on success or [NetworkException] on failure.
+  /// [request] contains the new account details.
+  Future<Either<NetworkException, String>> addAccount(AddAccountRequest request);
 
-  /// Update an existing account via the API
-  Future<String> updateAccount(AccountUpdateRequest request);
+  /// Updates an existing account with new information.
+  ///
+  /// Returns [Either] with success message on success or [NetworkException] on failure.
+  /// [request] contains the updated account information.
+  Future<Either<NetworkException, String>> updateAccount(UpdateAccountRequest request);
 
-  /// Delete an account via the API
-  Future<String> deleteAccount(DeleteAccountRequest request);
+  /// Deletes an existing account.
+  ///
+  /// Returns [Either] with success message on success or [NetworkException] on failure.
+  /// [request] contains the account identifier to be deleted.
+  Future<Either<NetworkException, String>> deleteAccount(DeleteAccountRequest request);
 }
 
-/// Implementation of [AccountRemoteDataSource]
+/// Implementation of [AccountRemoteDataSource] that handles actual API calls
+/// using Dio HTTP client.
 class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   final Dio _dio;
 
-  /// Creates a new [AccountRemoteDataSource] instance
+  /// Creates a new [AccountRemoteDataSourceImpl] instance with required dependencies.
+  ///
+  /// [dio] The Dio HTTP client instance for making API requests.
   AccountRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
-  /// Get all accounts for a user from the API
   @override
-  Future<AccountResponse> getAccounts(AccountRequest request) async {
+  Future<Either<NetworkException, AccountResponse>> getAccounts(GetAccountRequest request) async {
     try {
       final response = await _dio.get(
-        NetworkConstants.getAccountsByUserId(
-            //TODO: change to REAL userId
-            NetworkConstants.testUserId),
+        NetworkConstants.getAccountsByUserId(request.userId),
       );
 
       if (response.statusCode == 200 || response.statusCode == 302) {
-        return AccountResponse.fromJson(response.data);
+        return Right(AccountResponse.fromJson(response.data));
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to fetch accounts',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to fetch accounts',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 
   @override
-  Future<String> addAccount(AddAccountRequest request) async {
+  Future<Either<NetworkException, String>> addAccount(AddAccountRequest request) async {
     try {
       final response = await _dio.post(
         NetworkConstants.accountEndpoint,
@@ -61,23 +77,23 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       );
 
       if (response.statusCode == 201) {
-        return response.data['message'] as String;
+        return Right(response.data['message'] as String);
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to add account',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to add account',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 
   @override
-  Future<String> updateAccount(AccountUpdateRequest request) async {
+  Future<Either<NetworkException, String>> updateAccount(UpdateAccountRequest request) async {
     try {
       final response = await _dio.put(
         NetworkConstants.accountEndpoint,
@@ -85,23 +101,23 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        return response.data['message'] as String;
+        return Right(response.data['message'] as String);
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to update account',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to update account',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 
   @override
-  Future<String> deleteAccount(DeleteAccountRequest request) async {
+  Future<Either<NetworkException, String>> deleteAccount(DeleteAccountRequest request) async {
     try {
       final response = await _dio.delete(
         NetworkConstants.accountEndpoint,
@@ -109,18 +125,18 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        return response.data['message'] as String;
+        return Right(response.data['message'] as String);
       } else {
-        throw NetworkException(
+        return Left(NetworkException(
           message: 'Failed to delete account',
           statusCode: response.statusCode,
-        );
+        ));
       }
     } on DioException catch (e) {
-      throw NetworkException(
-        message: e.message ?? 'Failed to delete account',
+      return Left(NetworkException(
+        message: handleDioError(e),
         statusCode: e.response?.statusCode,
-      );
+      ));
     }
   }
 }

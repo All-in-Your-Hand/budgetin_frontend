@@ -6,12 +6,12 @@ part of 'account_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AccountRequest _$AccountRequestFromJson(Map<String, dynamic> json) =>
-    AccountRequest(
+GetAccountRequest _$GetAccountRequestFromJson(Map<String, dynamic> json) =>
+    GetAccountRequest(
       userId: json['userId'] as String,
     );
 
-Map<String, dynamic> _$AccountRequestToJson(AccountRequest instance) =>
+Map<String, dynamic> _$GetAccountRequestToJson(GetAccountRequest instance) =>
     <String, dynamic>{
       'userId': instance.userId,
     };
@@ -30,14 +30,14 @@ Map<String, dynamic> _$AddAccountRequestToJson(AddAccountRequest instance) =>
       'balance': instance.balance,
     };
 
-AccountUpdateRequest _$AccountUpdateRequestFromJson(
+UpdateAccountRequest _$UpdateAccountRequestFromJson(
         Map<String, dynamic> json) =>
-    AccountUpdateRequest(
+    UpdateAccountRequest(
       account: AccountModel.fromJson(json['account'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$AccountUpdateRequestToJson(
-        AccountUpdateRequest instance) =>
+Map<String, dynamic> _$UpdateAccountRequestToJson(
+        UpdateAccountRequest instance) =>
     <String, dynamic>{
       'account': instance.account,
     };

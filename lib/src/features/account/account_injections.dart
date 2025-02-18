@@ -1,11 +1,19 @@
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../../core/utils/log/app_logger.dart';
 import 'data/data_sources/remote/account_remote_data_source.dart';
 import 'data/repositories/account_repository_impl.dart';
 import 'domain/repositories/account_repository.dart';
 import 'presentation/providers/account_provider.dart';
 
-/// Sets up all account-related dependencies
+/// Sets up all account-related dependencies in the dependency injection container.
+///
+/// This function is responsible for registering:
+/// - Data sources (AccountRemoteDataSource)
+/// - Repositories (AccountRepository)
+/// - Providers (AccountProvider)
+///
+/// Throws an [Exception] if any registration fails.
 void setupAccountInjections() {
   try {
     final getIt = GetIt.instance;
@@ -25,12 +33,17 @@ void setupAccountInjections() {
       () => AccountProvider(repository: getIt()),
     );
   } catch (e) {
-    print('Error setting up account injections: $e');
+    AppLogger.error('AccountInjections', 'Error setting up account injections: $e');
     rethrow;
   }
 }
 
-/// Returns all providers needed for account management
+/// Returns a list of all providers needed for account management.
+///
+/// This method creates and returns a list of [ChangeNotifierProvider]s
+/// that are required for the account feature to function properly.
+///
+/// Returns a [List<ChangeNotifierProvider>] containing the AccountProvider.
 List<ChangeNotifierProvider> getAccountProviders() {
   final getIt = GetIt.instance;
 

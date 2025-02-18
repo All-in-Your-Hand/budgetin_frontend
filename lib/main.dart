@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'src/core/config/app_config.dart';
 import 'src/core/utils/injections.dart';
 import 'src/core/router/app_router.dart';
+import 'src/core/config/web_scroll_behavior.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize all injections
+  AppConfig.initialize();
   initInjections();
 
   runApp(
@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       routerConfig: router,
+      scrollBehavior: WebScrollBehavior(),
     );
   }
 }

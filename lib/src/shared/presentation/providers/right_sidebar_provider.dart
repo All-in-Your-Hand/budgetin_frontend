@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
+import '../../../features/transaction/domain/models/transaction_model.dart';
 
 /// Provider class for managing the right sidebar state.
 class RightSidebarProvider extends ChangeNotifier {
   bool _isExpanded = true;
+  TransactionModel? _transactionToEdit;
+  bool get isEditing => _transactionToEdit != null;
+
+  /// The transaction being edited, if any.
+  TransactionModel? get transactionToEdit => _transactionToEdit;
 
   /// Whether the right sidebar is expanded.
   bool get isExpanded => _isExpanded;
+
+  /// Starts editing a transaction in the sidebar
+  void startEditing(TransactionModel transaction) {
+    _transactionToEdit = transaction;
+    expand();
+    notifyListeners();
+  }
+
+  /// Cancels editing and clears the transaction
+  void cancelEditing() {
+    _transactionToEdit = null;
+    notifyListeners();
+  }
 
   /// Toggles the expanded state of the right sidebar.
   void toggleExpanded() {
@@ -25,6 +44,7 @@ class RightSidebarProvider extends ChangeNotifier {
   void collapse() {
     if (_isExpanded) {
       _isExpanded = false;
+      _transactionToEdit = null;
       notifyListeners();
     }
   }

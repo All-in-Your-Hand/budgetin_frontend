@@ -6,7 +6,7 @@ import '../providers/transaction_table_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../core/utils/constant/network_constants.dart';
-import '../widgets/transaction_dialog.dart';
+import '../../../../shared/presentation/providers/right_sidebar_provider.dart';
 
 /// A widget that displays transaction data in a sortable and filterable table format.
 ///
@@ -180,33 +180,33 @@ class _TransactionTableView extends StatelessWidget {
           DataCell(Text(transaction.transactionCategory)),
           DataCell(Text(transaction.transactionType)),
           DataCell(Text(transaction.description)),
-          DataCell(
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => TransactionDialog.show(
-                    context,
-                    transaction: transaction,
-                  ),
-                  tooltip: 'Edit Transaction',
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => _showDeleteConfirmation(
-                    context,
-                    transaction,
-                  ),
-                  tooltip: 'Delete Transaction',
-                  color: Colors.red,
-                ),
-              ],
-            ),
-          ),
+          DataCell(_buildActionButtons(context, transaction)),
         ],
       );
     }).toList();
+  }
+
+  /// Builds the action buttons (edit and delete) for a transaction
+  Row _buildActionButtons(BuildContext context, TransactionModel transaction) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => context.read<RightSidebarProvider>().startEditing(transaction),
+          tooltip: 'Edit Transaction',
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () => _showDeleteConfirmation(
+            context,
+            transaction,
+          ),
+          tooltip: 'Delete Transaction',
+          color: Colors.red,
+        ),
+      ],
+    );
   }
 
   /// Shows a confirmation dialog before deleting a transaction

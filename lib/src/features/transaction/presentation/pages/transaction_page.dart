@@ -5,7 +5,6 @@ import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../shared/presentation/widgets/app_scaffold.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
-import '../widgets/transaction_dialog.dart';
 import '../../../../shared/presentation/widgets/web_responsive_layout.dart';
 
 /// A page that displays a list of user transactions.
@@ -91,14 +90,6 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               );
             },
-          ),
-        ),
-        floatingActionButton: Semantics(
-          label: 'Add new transaction button',
-          child: FloatingActionButton(
-            onPressed: () => TransactionDialog.show(context),
-            tooltip: 'Add new transaction',
-            child: const Icon(Icons.add),
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_model.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -71,6 +72,26 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
     );
   }
 
+  void _populateFormFields(TransactionModel transaction) {
+    _dateController.text = DateFormat('dd/MM/yyyy').format(transaction.transactionDate);
+    _toController.text = transaction.to;
+    _categoryController.text = transaction.transactionCategory;
+    _accountController.text = transaction.accountId;
+    _amountController.text = transaction.transactionAmount.toString();
+    _typeController.text = transaction.transactionType;
+    _notesController.text = transaction.description;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initial population of form fields if editing
+    final transaction = context.read<RightSidebarProvider>().transactionToEdit;
+    if (transaction != null) {
+      _populateFormFields(transaction);
+    }
+  }
+
   @override
   void dispose() {
     _dateController.dispose();
@@ -99,32 +120,60 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
     if (!_formKey.currentState!.validate()) return;
 
     final dateParts = _dateController.text.split('/');
+    final now = DateTime.now();
     final selectedDate = DateTime(
       int.parse(dateParts[2]), // year
       int.parse(dateParts[1]), // month
       int.parse(dateParts[0]), // day
+      now.hour,
+      now.minute,
+      now.second,
     );
 
-    final request = AddTransactionRequest(
-      userId: NetworkConstants.testUserId,
-      accountId: _accountController.text,
-      transactionType: _typeController.text,
-      transactionCategory: _categoryController.text,
-      transactionAmount: double.parse(_amountController.text),
-      transactionDate: selectedDate,
-      description: _notesController.text,
-      to: _toController.text,
-    );
+    final rightSidebarProvider = context.read<RightSidebarProvider>();
+    final editingTransaction = rightSidebarProvider.transactionToEdit;
 
-    final success = await provider.addTransaction(request);
+    bool success;
+    if (editingTransaction != null) {
+      final updatedTransaction = TransactionModel(
+        transactionId: editingTransaction.transactionId,
+        userId: editingTransaction.userId,
+        accountId: _accountController.text,
+        transactionType: _typeController.text,
+        transactionCategory: _categoryController.text,
+        transactionAmount: double.parse(_amountController.text),
+        createdAt: editingTransaction.createdAt,
+        transactionDate: selectedDate,
+        description: _notesController.text,
+        to: _toController.text,
+      );
+
+      final updateRequest = UpdateTransactionRequest(transaction: updatedTransaction);
+      success = await provider.updateTransaction(updateRequest);
+    } else {
+      final request = AddTransactionRequest(
+        userId: NetworkConstants.testUserId,
+        accountId: _accountController.text,
+        transactionType: _typeController.text,
+        transactionCategory: _categoryController.text,
+        transactionAmount: double.parse(_amountController.text),
+        transactionDate: selectedDate,
+        description: _notesController.text,
+        to: _toController.text,
+      );
+
+      success = await provider.addTransaction(request);
+    }
 
     if (success) {
       await provider.getTransactions(NetworkConstants.testUserId);
       if (context.mounted) {
         _clearForm();
+        rightSidebarProvider.cancelEditing();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Transaction added successfully!'),
+          SnackBar(
+            content: Text(
+                editingTransaction != null ? 'Transaction updated successfully!' : 'Transaction added successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -133,7 +182,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(provider.error ?? 'Failed to add transaction'),
+            content: Text(provider.error ?? 'Failed to ${editingTransaction != null ? 'update' : 'add'} transaction'),
             backgroundColor: Colors.red,
           ),
         );
@@ -149,6 +198,12 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
           _animationController.forward();
         } else {
           _animationController.reverse();
+        }
+
+        // Handle form population when transaction to edit changes
+        final transaction = rightSidebarProvider.transactionToEdit;
+        if (transaction != null) {
+          _populateFormFields(transaction);
         }
 
         return Row(
@@ -194,12 +249,17 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          const Text(
-                                            'Add Transaction',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                rightSidebarProvider.isEditing ? 'Edit Transaction' : 'Add Transaction',
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                           const SizedBox(height: 16),
                                           _buildDateField(context),
@@ -216,12 +276,31 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
                                           const SizedBox(height: 16),
                                           _buildNotesField(),
                                           const SizedBox(height: 24),
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: ElevatedButton(
-                                              onPressed: () => _handleSubmit(context, transactionProvider),
-                                              child: const Text('Add Transaction'),
-                                            ),
+                                          Row(
+                                            children: [
+                                              if (rightSidebarProvider.isEditing) ...[
+                                                OutlinedButton(
+                                                  onPressed: () {
+                                                    _clearForm();
+                                                    rightSidebarProvider.cancelEditing();
+                                                  },
+                                                  child: const Text('Cancel'),
+                                                ),
+                                                const SizedBox(width: 12),
+                                              ],
+                                              Expanded(
+                                                child: ElevatedButton(
+                                                  onPressed: () => _handleSubmit(context, transactionProvider),
+                                                  child: Text(
+                                                    rightSidebarProvider.isEditing
+                                                        ? 'Update Transaction'
+                                                        : 'Add Transaction',
+                                                    softWrap: true,
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),

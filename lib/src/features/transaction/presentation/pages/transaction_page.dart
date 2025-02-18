@@ -6,7 +6,7 @@ import '../../../../shared/presentation/widgets/app_scaffold.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
 import '../widgets/transaction_dialog.dart';
-import '../../../../core/config/web_config.dart';
+import '../../../../shared/presentation/widgets/web_responsive_layout.dart';
 
 /// A page that displays a list of user transactions.
 ///
@@ -54,53 +54,44 @@ class _TransactionPageState extends State<TransactionPage> {
     return AppScaffold(
       currentIndex: 1,
       body: Scaffold(
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final webConstraints = WebConfig.getWebConstraints(constraints).copyWith(
-              maxWidth: constraints.maxWidth, // Allow full width
-              minWidth: constraints.maxWidth, // Force full width
-            );
+        body: WebResponsiveLayout(
+          useFullWidth: true,
+          child: Consumer<TransactionProvider>(
+            builder: (context, provider, _) {
+              if (provider.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-            return Container(
-              constraints: webConstraints,
-              child: Consumer<TransactionProvider>(
-                builder: (context, provider, _) {
-                  if (provider.isLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (provider.error != null) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Error: ${provider.error}',
-                            style: const TextStyle(color: Colors.red),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _fetchData,
-                            child: const Text('Retry'),
-                          ),
-                        ],
+              if (provider.error != null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Error: ${provider.error}',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
                       ),
-                    );
-                  }
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _fetchData,
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TransactionTable(
-                      transactions: provider.transactions,
-                    ),
-                  );
-                },
-              ),
-            );
-          },
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TransactionTable(
+                  transactions: provider.transactions,
+                ),
+              );
+            },
+          ),
         ),
         floatingActionButton: Semantics(
           label: 'Add new transaction button',

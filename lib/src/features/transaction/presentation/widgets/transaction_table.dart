@@ -93,16 +93,30 @@ class _TransactionTableView extends StatelessWidget {
           children: [
             _buildFilters(context, tableProvider),
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SingleChildScrollView(
-                  child: DataTable(
-                    sortColumnIndex: tableProvider.sortColumnIndex,
-                    sortAscending: tableProvider.sortAscending,
-                    columns: _buildColumns(tableProvider, accountProvider),
-                    rows: _buildRows(context, tableProvider, accountProvider),
-                  ),
-                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: constraints.maxWidth,
+                      ),
+                      child: SingleChildScrollView(
+                        child: DataTable(
+                          sortColumnIndex: tableProvider.sortColumnIndex,
+                          sortAscending: tableProvider.sortAscending,
+                          headingRowColor: WidgetStateProperty.all(const Color(0xFFFFF6DD)),
+                          columnSpacing: 56.0,
+                          horizontalMargin: 24.0,
+                          dataRowMinHeight: 48.0,
+                          dataRowMaxHeight: 48.0,
+                          columns: _buildColumns(tableProvider, accountProvider),
+                          rows: _buildRows(context, tableProvider, accountProvider),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -145,11 +159,15 @@ class _TransactionTableView extends StatelessWidget {
         (transaction) => transaction.transactionType,
       ),
       _buildSortableColumn<String>(
-        'Description',
+        'Notes',
         provider,
         (transaction) => transaction.description,
       ),
-      const DataColumn(label: Text('Actions')),
+      const DataColumn(
+        label: Text(
+          'Actions',
+        ),
+      ),
     ];
   }
 
@@ -172,6 +190,9 @@ class _TransactionTableView extends StatelessWidget {
     final dateFormat = DateFormat('dd/MM/yyyy');
     return provider.transactions.map((transaction) {
       return DataRow(
+        color: WidgetStateProperty.all(
+          Color(transaction.transactionType == 'EXPENSE' ? 0xFFFFE6E6 : 0xFFF0FFE6),
+        ),
         cells: [
           DataCell(Text(dateFormat.format(transaction.transactionDate))),
           DataCell(Text(_getAccountName(transaction.accountId, accountProvider))),

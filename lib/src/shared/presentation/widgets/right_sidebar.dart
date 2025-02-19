@@ -120,18 +120,17 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
     if (!_formKey.currentState!.validate()) return;
 
     final dateParts = _dateController.text.split('/');
-    final now = DateTime.now();
+    final rightSidebarProvider = context.read<RightSidebarProvider>();
+    final editingTransaction = rightSidebarProvider.transactionToEdit;
+
     final selectedDate = DateTime(
       int.parse(dateParts[2]), // year
       int.parse(dateParts[1]), // month
       int.parse(dateParts[0]), // day
-      now.hour,
-      now.minute,
-      now.second,
+      editingTransaction?.createdAt.hour ?? DateTime.now().hour,
+      editingTransaction?.createdAt.minute ?? DateTime.now().minute,
+      editingTransaction?.createdAt.second ?? DateTime.now().second,
     );
-
-    final rightSidebarProvider = context.read<RightSidebarProvider>();
-    final editingTransaction = rightSidebarProvider.transactionToEdit;
 
     bool success;
     if (editingTransaction != null) {

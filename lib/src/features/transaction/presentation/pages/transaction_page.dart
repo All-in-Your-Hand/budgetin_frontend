@@ -84,7 +84,7 @@ class _TransactionPageState extends State<TransactionPage> {
               }
 
               return Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: TransactionTable(
                   transactions: provider.transactions,
                 ),

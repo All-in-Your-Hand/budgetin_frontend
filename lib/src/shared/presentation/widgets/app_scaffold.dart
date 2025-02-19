@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'sidebar.dart';
 import 'right_sidebar.dart';
+import 'footer.dart';
 
 /// A scaffold widget that provides the main layout structure for the app.
 class AppScaffold extends StatelessWidget {
@@ -20,13 +21,20 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
+      body: Column(
         children: [
-          Sidebar(currentIndex: currentIndex),
           Expanded(
-            child: body,
+            child: Row(
+              children: [
+                Sidebar(currentIndex: currentIndex),
+                Expanded(
+                  child: body,
+                ),
+                const RightSidebar(),
+              ],
+            ),
           ),
-          const RightSidebar(),
+          const Footer(),
         ],
       ),
     );

@@ -21,6 +21,8 @@ dependencies:
   dartz: ^0.10.1
   go_router: ^13.2.0
   url_strategy: ^0.2.0
+  font_awesome_flutter: ^10.7.0
+  flutter_svg: ^2.0.10
 
 dev_dependencies:
   flutter_test:
@@ -33,4 +35,15 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/mock_data.json
+    - assets/icons/
+    - assets/images/
+  fonts:
+    - family: Lexend
+      fonts:
+        - asset: assets/fonts/Lexend/Lexend-Regular.ttf
+        - asset: assets/fonts/Lexend/Lexend-Bold.ttf
+        - asset: assets/fonts/Lexend/Lexend-Medium.ttf
+        - asset: assets/fonts/Lexend/Lexend-SemiBold.ttf
+        - asset: assets/fonts/Lexend/Lexend-Light.ttf
+        - asset: assets/fonts/Lexend/Lexend-ExtraLight.ttf
+        - asset: assets/fonts/Lexend/Lexend-Black.ttf

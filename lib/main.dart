@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'Budgetin',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
       ),
       routerConfig: router,
       scrollBehavior: WebScrollBehavior(),

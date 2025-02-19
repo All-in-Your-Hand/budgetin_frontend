@@ -90,8 +90,19 @@ class TransactionTableProvider extends ChangeNotifier {
   ///
   /// Both [start] and [end] can be null to clear the date filter.
   void setDateRange(DateTime? start, DateTime? end) {
-    _startDate = start;
-    _endDate = end;
+    // Set start date to beginning of day (00:00:00)
+    _startDate = start?.copyWith(
+      hour: 0,
+      minute: 0,
+      second: 0,
+    );
+
+    // Set end date to end of day (23:59:59)
+    _endDate = end?.copyWith(
+      hour: 23,
+      minute: 59,
+      second: 59,
+    );
     _applyFilters();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../domain/models/transaction_model.dart';
@@ -83,15 +84,14 @@ class _TransactionTableView extends StatelessWidget {
           );
         }
 
-        if (tableProvider.transactions.isEmpty) {
-          return const Center(
-            child: Text('No transactions found'),
-          );
-        }
-
         return Column(
           children: [
             _buildFilters(context, tableProvider),
+            if (tableProvider.transactions.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('No transactions found'),
+              ),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -102,16 +102,23 @@ class _TransactionTableView extends StatelessWidget {
                         minWidth: constraints.maxWidth,
                       ),
                       child: SingleChildScrollView(
-                        child: DataTable(
-                          sortColumnIndex: tableProvider.sortColumnIndex,
-                          sortAscending: tableProvider.sortAscending,
-                          headingRowColor: WidgetStateProperty.all(const Color(0xFFFFF6DD)),
-                          columnSpacing: 56.0,
-                          horizontalMargin: 24.0,
-                          dataRowMinHeight: 48.0,
-                          dataRowMaxHeight: 48.0,
-                          columns: _buildColumns(tableProvider, accountProvider),
-                          rows: _buildRows(context, tableProvider, accountProvider),
+                        child: Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: DataTable(
+                            sortColumnIndex: tableProvider.sortColumnIndex,
+                            sortAscending: tableProvider.sortAscending,
+                            headingRowColor: WidgetStateProperty.all(const Color(0xFFFFF6DD)),
+                            columnSpacing: 56.0,
+                            horizontalMargin: 24.0,
+                            dataRowMinHeight: 48.0,
+                            dataRowMaxHeight: 48.0,
+                            columns: _buildColumns(tableProvider, accountProvider),
+                            rows: _buildRows(context, tableProvider, accountProvider),
+                          ),
                         ),
                       ),
                     ),
@@ -165,7 +172,7 @@ class _TransactionTableView extends StatelessWidget {
       ),
       const DataColumn(
         label: Text(
-          'Actions',
+          '',
         ),
       ),
     ];
@@ -213,12 +220,12 @@ class _TransactionTableView extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: const Icon(Icons.edit),
+          icon: const Icon(FontAwesomeIcons.penToSquare, size: 16),
           onPressed: () => context.read<RightSidebarProvider>().startEditing(transaction),
           tooltip: 'Edit Transaction',
         ),
         IconButton(
-          icon: const Icon(Icons.delete),
+          icon: const Icon(FontAwesomeIcons.trashCan, size: 16),
           onPressed: () => _showDeleteConfirmation(
             context,
             transaction,
@@ -255,6 +262,7 @@ class _TransactionTableView extends StatelessWidget {
       final provider = context.read<TransactionProvider>();
       await provider.deleteTransaction(
         transaction.transactionId,
+        // TODO: Get from auth provider
         NetworkConstants.testUserId,
       );
     }
@@ -263,33 +271,24 @@ class _TransactionTableView extends StatelessWidget {
   Widget _buildFilters(BuildContext context, TransactionTableProvider provider) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildDateFilter(context, provider),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildToFilter(provider),
-              ),
-            ],
+          Expanded(
+            child: _buildToFilter(provider),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildAmountFilter(provider),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildTypeFilter(provider),
-              ),
-            ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildDateFilter(context, provider),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildTypeFilter(provider),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildAmountFilter(provider),
+          ),
+          const SizedBox(width: 12),
           ElevatedButton(
             onPressed: provider.resetFilters,
             child: const Text('Reset Filters'),
@@ -350,13 +349,13 @@ class _TransactionTableView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('To', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Search recipient...',
+                prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               ),
               onChanged: provider.setToFilter,
             ),
@@ -388,10 +387,11 @@ class _TransactionTableView extends StatelessWidget {
                   child: TextField(
                     controller: minController,
                     decoration: const InputDecoration(
-                      labelText: 'Min Amount',
+                      labelText: 'Min',
                       prefixText: '\$',
                       border: OutlineInputBorder(),
                       isDense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
@@ -401,10 +401,11 @@ class _TransactionTableView extends StatelessWidget {
                   child: TextField(
                     controller: maxController,
                     decoration: const InputDecoration(
-                      labelText: 'Max Amount',
+                      labelText: 'Max',
                       prefixText: '\$',
                       border: OutlineInputBorder(),
                       isDense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
@@ -426,9 +427,9 @@ class _TransactionTableView extends StatelessWidget {
                                 }
                               : null,
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(8),
                           ),
-                          child: const Icon(Icons.search),
+                          child: const Icon(Icons.search, size: 20),
                         );
                       },
                     );

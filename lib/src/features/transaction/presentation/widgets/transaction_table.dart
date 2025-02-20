@@ -171,9 +171,8 @@ class _TransactionTableView extends StatelessWidget {
         (transaction) => transaction.description,
       ),
       const DataColumn(
-        label: Text(
-          '',
-        ),
+        headingRowAlignment: MainAxisAlignment.end,
+        label: Text('Actions'),
       ),
     ];
   }
@@ -208,32 +207,45 @@ class _TransactionTableView extends StatelessWidget {
           DataCell(Text(transaction.transactionCategory)),
           DataCell(Text(transaction.transactionType)),
           DataCell(Text(transaction.description)),
-          DataCell(_buildActionButtons(context, transaction)),
+          DataCell(
+            SizedBox(
+              width: double.infinity,
+              child: _buildActionButtons(context, transaction),
+            ),
+          ),
         ],
       );
     }).toList();
   }
 
   /// Builds the action buttons (edit and delete) for a transaction
-  Row _buildActionButtons(BuildContext context, TransactionModel transaction) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: const Icon(FontAwesomeIcons.penToSquare, size: 16),
-          onPressed: () => context.read<RightSidebarProvider>().startEditing(transaction),
-          tooltip: 'Edit Transaction',
-        ),
-        IconButton(
-          icon: const Icon(FontAwesomeIcons.trashCan, size: 16),
-          onPressed: () => _showDeleteConfirmation(
-            context,
-            transaction,
+  Widget _buildActionButtons(BuildContext context, TransactionModel transaction) {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(FontAwesomeIcons.penToSquare, size: 16),
+            onPressed: () => context.read<RightSidebarProvider>().startEditing(transaction),
+            tooltip: 'Edit Transaction',
+            padding: const EdgeInsets.all(4),
+            constraints: const BoxConstraints(),
           ),
-          tooltip: 'Delete Transaction',
-          color: Colors.red,
-        ),
-      ],
+          const SizedBox(width: 1),
+          IconButton(
+            icon: const Icon(FontAwesomeIcons.trashCan, size: 16),
+            onPressed: () => _showDeleteConfirmation(
+              context,
+              transaction,
+            ),
+            tooltip: 'Delete Transaction',
+            color: Colors.red,
+            padding: const EdgeInsets.all(4),
+            constraints: const BoxConstraints(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -269,99 +281,160 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   Widget _buildFilters(BuildContext context, TransactionTableProvider provider) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildToFilter(provider),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildDateFilter(context, provider),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildTypeFilter(provider),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildAmountFilter(provider),
-          ),
-          const SizedBox(width: 12),
-          ElevatedButton(
-            onPressed: provider.resetFilters,
-            child: const Text('Reset Filters'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDateFilter(BuildContext context, TransactionTableProvider provider) {
     return Card(
+      elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Date Range', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      final DateTimeRange? dateRange = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now(),
-                        initialDateRange: provider.startDate != null && provider.endDate != null
-                            ? DateTimeRange(
-                                start: provider.startDate!,
-                                end: provider.endDate!,
-                              )
-                            : null,
-                      );
-                      if (dateRange != null) {
-                        provider.setDateRange(dateRange.start, dateRange.end);
-                      }
-                    },
-                    child: Text(
-                      provider.startDate != null && provider.endDate != null
-                          ? '${DateFormat('dd/MM/yyyy').format(provider.startDate!)} - ${DateFormat('dd/MM/yyyy').format(provider.endDate!)}'
-                          : 'Select Date Range',
-                    ),
-                  ),
+        padding: const EdgeInsets.all(16.0),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Flexible(
+                flex: 20,
+                child: _buildToFilter(provider),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                flex: 25,
+                child: _buildDateFilter(context, provider),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                flex: 20,
+                child: _buildTypeFilter(provider),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                flex: 35,
+                child: _buildAmountFilter(provider),
+              ),
+              const SizedBox(width: 12),
+              ElevatedButton(
+                onPressed: provider.resetFilters,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
-              ],
-            ),
-          ],
+                child: const Text('Reset Filters'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildToFilter(TransactionTableProvider provider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Search recipient...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          decoration: const InputDecoration(
+            hintText: 'Search recipient...',
+            prefixIcon: Icon(Icons.search, size: 20),
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          ),
+          onChanged: provider.setToFilter,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateFilter(BuildContext context, TransactionTableProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 48, // Match TextField height
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              minimumSize: const Size.fromHeight(48),
+              side: const BorderSide(color: Colors.grey), // Match TextField border
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0), // Match TextField border radius
               ),
-              onChanged: provider.setToFilter,
+            ),
+            onPressed: () async {
+              final DateTimeRange? dateRange = await showDateRangePicker(
+                context: context,
+                firstDate: DateTime(2000),
+                lastDate: DateTime.now(),
+                initialDateRange: provider.startDate != null && provider.endDate != null
+                    ? DateTimeRange(
+                        start: provider.startDate!,
+                        end: provider.endDate!,
+                      )
+                    : null,
+              );
+              if (dateRange != null) {
+                provider.setDateRange(dateRange.start, dateRange.end);
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Icon(Icons.calendar_today, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    provider.startDate != null && provider.endDate != null
+                        ? '${DateFormat('dd/MM/yyyy').format(provider.startDate!)} - ${DateFormat('dd/MM/yyyy').format(provider.endDate!)}'
+                        : 'Select Date Range',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTypeFilter(TransactionTableProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        DropdownButtonFormField<String>(
+          isExpanded: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          ),
+          value: provider.selectedType,
+          hint: const Text('All Types'),
+          items: [
+            const DropdownMenuItem<String>(
+              value: null,
+              child: Row(
+                children: [
+                  Icon(Icons.filter_list, size: 18),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'All Types',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ...provider.transactionTypes.map(
+              (type) => DropdownMenuItem<String>(
+                value: type,
+                child: Text(
+                  type,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
           ],
+          onChanged: provider.setTransactionType,
         ),
-      ),
+      ],
     );
   }
 
@@ -373,109 +446,65 @@ class _TransactionTableView extends StatelessWidget {
       text: provider.maxAmount == double.infinity ? '' : provider.maxAmount.toStringAsFixed(2),
     );
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
           children: [
-            const Text('Amount Range', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: minController,
-                    decoration: const InputDecoration(
-                      labelText: 'Min',
-                      prefixText: '\$',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  ),
+            Expanded(
+              child: TextField(
+                controller: minController,
+                decoration: const InputDecoration(
+                  labelText: 'Min',
+                  prefixText: '\$',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: maxController,
-                    decoration: const InputDecoration(
-                      labelText: 'Max',
-                      prefixText: '\$',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: maxController,
+                decoration: const InputDecoration(
+                  labelText: 'Max',
+                  prefixText: '\$',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 ),
-                const SizedBox(width: 8),
-                ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: minController,
-                  builder: (context, minValue, _) {
-                    return ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: maxController,
-                      builder: (context, maxValue, _) {
-                        final isEnabled = minValue.text.isNotEmpty || maxValue.text.isNotEmpty;
-                        return ElevatedButton(
-                          onPressed: isEnabled
-                              ? () {
-                                  final min = double.tryParse(minValue.text) ?? 0;
-                                  final max = double.tryParse(maxValue.text) ?? double.infinity;
-                                  provider.setAmountRange(min, max);
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(8),
-                          ),
-                          child: const Icon(Icons.search, size: 20),
-                        );
-                      },
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: minController,
+              builder: (context, minValue, _) {
+                return ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: maxController,
+                  builder: (context, maxValue, _) {
+                    final isEnabled = minValue.text.isNotEmpty || maxValue.text.isNotEmpty;
+                    return ElevatedButton(
+                      onPressed: isEnabled
+                          ? () {
+                              final min = double.tryParse(minValue.text) ?? 0;
+                              final max = double.tryParse(maxValue.text) ?? double.infinity;
+                              provider.setAmountRange(min, max);
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      ),
+                      child: const Icon(Icons.search, size: 20),
                     );
                   },
-                ),
-              ],
+                );
+              },
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTypeFilter(TransactionTableProvider provider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Type', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-              value: provider.selectedType,
-              hint: const Text('Select type'),
-              items: [
-                const DropdownMenuItem<String>(
-                  value: null,
-                  child: Text('All'),
-                ),
-                ...provider.transactionTypes.map(
-                  (type) => DropdownMenuItem<String>(
-                    value: type,
-                    child: Text(type),
-                  ),
-                ),
-              ],
-              onChanged: provider.setTransactionType,
-            ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 }

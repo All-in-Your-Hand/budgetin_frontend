@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 /// Configuration class for web-specific settings and optimizations
 class WebConfig {
@@ -7,6 +8,7 @@ class WebConfig {
   static void initialize() {
     if (!kIsWeb) return;
     // Web-specific initializations that don't require context
+    setPathUrlStrategy();
   }
 
   /// Get web-specific constraints for responsive layout

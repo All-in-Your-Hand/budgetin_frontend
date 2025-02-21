@@ -1,3 +1,4 @@
+import 'package:budgetin_frontend/src/features/authentication/presentation/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/transaction/presentation/pages/transaction_page.dart';
@@ -64,6 +65,15 @@ final GoRouter router = GoRouter(
     return const RouteErrorPage(error: routeException);
   },
   routes: [
+    GoRoute(
+      path: '/signup',
+      name: 'signup',
+      pageBuilder: (context, state) => _buildPageWithDefaultTransition(
+        context: context,
+        state: state,
+        child: const SignUpPage(),
+      ),
+    ),
     GoRoute(
       path: '/transactions',
       name: 'transactions',

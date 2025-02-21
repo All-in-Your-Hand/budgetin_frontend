@@ -110,20 +110,15 @@ class _AccountsPageState extends State<AccountsPage> {
                               ),
                               shrinkWrap: true,
                               physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: hasAccounts ? accounts.length + 1 : 1,
+                              itemCount: accounts.length + 1,
                               itemBuilder: (context, index) {
-                                // If there are no accounts, show AddAccountCard as the only item
-                                if (!hasAccounts) {
+                                // Always show AddAccountCard as the first item
+                                if (index == 0) {
                                   return const AddAccountCard();
                                 }
 
-                                // If this is the last item, show AddAccountCard
-                                if (index == accounts.length) {
-                                  return const AddAccountCard();
-                                }
-
-                                // Otherwise show the account card
-                                return AccountCard(account: accounts[index]);
+                                // Show account cards after the AddAccountCard
+                                return AccountCard(account: accounts[index - 1]);
                               },
                             ),
                           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:url_strategy/url_strategy.dart';
 import 'web_config.dart';
 import 'web_scroll_behavior.dart';
 
@@ -12,7 +11,6 @@ class AppConfig {
 
     // Web-specific configurations
     if (kIsWeb) {
-      setPathUrlStrategy();
       WebConfig.initialize();
     }
   }

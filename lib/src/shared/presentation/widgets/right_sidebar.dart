@@ -8,6 +8,7 @@ import '../../../features/transaction/presentation/providers/transaction_provide
 import '../../../features/account/presentation/providers/account_provider.dart';
 import '../../../core/utils/constant/network_constants.dart';
 import '../providers/right_sidebar_provider.dart';
+import './custom_snackbar.dart';
 
 /// A right sidebar widget that provides a form for adding new transactions.
 /// This widget slides in and out from the right side of the screen and contains
@@ -169,21 +170,18 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
       if (context.mounted) {
         _clearForm();
         rightSidebarProvider.cancelEditing();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                editingTransaction != null ? 'Transaction updated successfully!' : 'Transaction added successfully!'),
-            backgroundColor: Colors.green,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: true,
+          message: editingTransaction != null ? 'Transaction updated successfully!' : 'Transaction added successfully!',
         );
       }
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(provider.error ?? 'Failed to ${editingTransaction != null ? 'update' : 'add'} transaction'),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: false,
+          message: provider.error ?? 'Failed to ${editingTransaction != null ? 'update' : 'add'} transaction',
         );
       }
     }

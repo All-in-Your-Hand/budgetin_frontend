@@ -7,6 +7,7 @@ import '../../domain/models/transaction_request.dart';
 import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../core/utils/constant/network_constants.dart';
+import '../../../../shared/presentation/widgets/custom_snackbar.dart';
 
 /// A dialog widget for adding or editing transactions.
 ///
@@ -151,24 +152,18 @@ class _TransactionDialogState extends State<TransactionDialog> {
       await provider.getTransactions(NetworkConstants.testUserId);
       if (context.mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.transaction != null ? 'Transaction updated successfully!' : 'Transaction added successfully!',
-            ),
-            backgroundColor: Colors.green,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: true,
+          message: widget.transaction != null ? 'Transaction updated successfully!' : 'Transaction added successfully!',
         );
       }
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              provider.error ?? 'Failed to ${widget.transaction != null ? 'update' : 'add'} transaction',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: false,
+          message: provider.error ?? 'Failed to ${widget.transaction != null ? 'update' : 'add'} transaction',
         );
       }
     }

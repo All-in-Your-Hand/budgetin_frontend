@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../domain/models/account_request.dart';
 import '../providers/account_provider.dart';
 import '../../../../core/utils/constant/network_constants.dart';
+import '../../../../shared/presentation/widgets/custom_snackbar.dart';
 
 /// A dialog widget for adding or editing accounts.
 ///
@@ -69,11 +70,10 @@ class _AccountDialogState extends State<AccountDialog> {
     if (!_formKey.currentState!.validate()) {
       // Announce validation errors to screen readers
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fix the errors in the form'),
-          backgroundColor: Colors.red,
-        ),
+      CustomSnackbar.show(
+        context: context,
+        isSuccess: false,
+        message: 'Please fix the errors in the form',
       );
       return;
     }
@@ -105,38 +105,25 @@ class _AccountDialogState extends State<AccountDialog> {
         await provider.getAccounts(NetworkConstants.testUserId);
         if (context.mounted) {
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
-                semanticsLabel:
-                    widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
-              ),
-              backgroundColor: Colors.green,
-            ),
+          CustomSnackbar.show(
+            context: context,
+            isSuccess: true,
+            message: widget.account != null ? 'Account updated successfully!' : 'Account added successfully!',
           );
         }
       } else if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              provider.error ?? 'Failed to ${widget.account != null ? 'update' : 'add'} account',
-              semanticsLabel: provider.error ?? 'Failed to ${widget.account != null ? 'update' : 'add'} account',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: false,
+          message: provider.error ?? 'Failed to ${widget.account != null ? 'update' : 'add'} account',
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'An unexpected error occurred',
-              semanticsLabel: 'An unexpected error occurred',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: false,
+          message: 'An unexpected error occurred',
         );
       }
     }

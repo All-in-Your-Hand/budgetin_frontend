@@ -6,6 +6,11 @@ When a request is made, or a response is received, all the data sent and receive
 
 Consider extracting validation logic to a separate class. From transaction provider and account dialog.
 
+Add a did edit check before updating the transaction. If it is not edited, then don't update it.
+
+Try to make the filter section horizontally scrollable on small screens. Try take make the filter and transaction table sections
+as a whole so that they can be scrolled as a whole.
+
 BACKEND TODO:
 
 - deleteCascading boolean field -> add to account

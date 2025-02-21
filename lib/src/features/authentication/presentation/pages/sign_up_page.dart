@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../domain/models/auth_request_model.dart';
 import '../providers/auth_provider.dart';
+import '../../../../shared/presentation/widgets/custom_snackbar.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -41,11 +42,10 @@ class _SignUpPageState extends State<SignUpPage> {
       if (success && mounted) {
         // TODO: Navigate to home page or next screen
         // For now, just show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sign up successful!'),
-            backgroundColor: Colors.green,
-          ),
+        CustomSnackbar.show(
+          context: context,
+          isSuccess: true,
+          message: 'Sign up successful!',
         );
       }
     }
@@ -59,11 +59,10 @@ class _SignUpPageState extends State<SignUpPage> {
         builder: (context, authProvider, child) {
           if (authProvider.error != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(authProvider.error!),
-                  backgroundColor: Colors.red,
-                ),
+              CustomSnackbar.show(
+                context: context,
+                isSuccess: false,
+                message: authProvider.error!,
               );
             });
           }

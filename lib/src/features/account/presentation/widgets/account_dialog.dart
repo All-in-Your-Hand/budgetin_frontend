@@ -253,6 +253,9 @@ class _BalanceField extends StatelessWidget {
           if (balance < 0) {
             return 'Balance cannot be negative';
           }
+          if (balance > 999999999999) {
+            return 'Balance cannot exceed 999,999,999,999';
+          }
           return null;
         },
         autovalidateMode: AutovalidateMode.onUserInteraction,

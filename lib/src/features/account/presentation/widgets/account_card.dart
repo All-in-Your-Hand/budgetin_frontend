@@ -61,11 +61,32 @@ class AccountCard extends StatelessWidget {
                             child: Text('Delete'),
                           ),
                         ],
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 'edit') {
                             AccountDialog.show(context, account: account);
                           } else if (value == 'delete') {
-                            context.read<AccountProvider>().deleteAccount(account.id);
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete Account'),
+                                content: const Text('Are you sure you want to delete this account?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true && context.mounted) {
+                              await context.read<AccountProvider>().deleteAccount(account.id);
+                            }
                           }
                         },
                       ),

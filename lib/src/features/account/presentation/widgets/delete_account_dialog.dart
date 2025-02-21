@@ -121,12 +121,24 @@ class _ActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(child: TextButton(onPressed: onCancel, child: const Text('Cancel'))),
+        Expanded(
+          child: TextButton(
+            style: TextButton.styleFrom(
+              side: const BorderSide(width: 1),
+            ),
+            onPressed: onCancel,
+            child: const Text('Cancel'),
+          ),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
+            ),
             onPressed: onDelete,
             child: const Text('Delete'),
           ),

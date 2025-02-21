@@ -18,9 +18,11 @@ class CustomSnackbar {
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          semanticsLabel: message,
+        content: Center(
+          child: Text(
+            message,
+            semanticsLabel: message,
+          ),
         ),
         backgroundColor: isSuccess ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
         behavior: SnackBarBehavior.floating,

@@ -27,7 +27,7 @@ class CustomSnackbar {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        width: 300,
+        width: 260,
       ),
     );
   }

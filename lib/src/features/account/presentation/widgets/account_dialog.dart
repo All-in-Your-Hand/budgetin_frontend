@@ -67,16 +67,7 @@ class _AccountDialogState extends State<AccountDialog> {
   }
 
   Future<void> _handleSubmit(BuildContext context, AccountProvider provider) async {
-    if (!_formKey.currentState!.validate()) {
-      // Announce validation errors to screen readers
-      ScaffoldMessenger.of(context).clearSnackBars();
-      CustomSnackbar.show(
-        context: context,
-        isSuccess: false,
-        message: 'Please fix the errors in the form',
-      );
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     try {
       final request = widget.account != null

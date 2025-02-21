@@ -8,6 +8,7 @@ import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../core/utils/constant/network_constants.dart';
 import '../../../../shared/presentation/providers/right_sidebar_provider.dart';
+import 'delete_transaction_dialog.dart';
 
 /// A widget that displays transaction data in a sortable and filterable table format.
 ///
@@ -235,10 +236,7 @@ class _TransactionTableView extends StatelessWidget {
           const SizedBox(width: 1),
           IconButton(
             icon: const Icon(FontAwesomeIcons.trashCan, size: 16),
-            onPressed: () => _showDeleteConfirmation(
-              context,
-              transaction,
-            ),
+            onPressed: () async => await DeleteTransactionDialog.show(context, transaction: transaction),
             tooltip: 'Delete Transaction',
             color: Colors.red,
             padding: const EdgeInsets.all(4),
@@ -247,37 +245,6 @@ class _TransactionTableView extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  /// Shows a confirmation dialog before deleting a transaction
-  Future<void> _showDeleteConfirmation(BuildContext context, TransactionModel transaction) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Transaction'),
-        content: const Text('Are you sure you want to delete this transaction?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && context.mounted) {
-      final provider = context.read<TransactionProvider>();
-      await provider.deleteTransaction(
-        transaction.transactionId,
-        // TODO: Get from auth provider
-        NetworkConstants.testUserId,
-      );
-    }
   }
 
   Widget _buildFilters(BuildContext context, TransactionTableProvider provider) {

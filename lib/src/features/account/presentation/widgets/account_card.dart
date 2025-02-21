@@ -64,7 +64,7 @@ class AccountCard extends StatelessWidget {
                           if (value == 'edit') {
                             AccountDialog.show(context, account: account);
                           } else if (value == 'delete') {
-                            DeleteAccountDialog.show(context, account: account);
+                            await DeleteAccountDialog.show(context, account: account);
                           }
                         },
                       ),

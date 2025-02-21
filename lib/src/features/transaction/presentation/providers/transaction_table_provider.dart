@@ -14,6 +14,12 @@ class TransactionTableProvider extends ChangeNotifier {
   /// The current list of filtered transactions to display.
   List<TransactionModel> get transactions => List.unmodifiable(_filteredTransactions);
 
+  /// Gets the latest transaction date from all transactions.
+  DateTime get latestTransactionDate {
+    if (_allTransactions.isEmpty) return DateTime.now();
+    return _allTransactions.map((t) => t.transactionDate).reduce((a, b) => a.isAfter(b) ? a : b);
+  }
+
   int? _sortColumnIndex;
 
   /// The index of the currently sorted column, if any.

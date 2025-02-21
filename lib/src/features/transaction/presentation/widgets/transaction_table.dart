@@ -312,49 +312,75 @@ class _TransactionTableView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          height: 48, // Match TextField height
-          child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              minimumSize: const Size.fromHeight(48),
-              side: const BorderSide(color: Colors.grey), // Match TextField border
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4.0), // Match TextField border radius
-              ),
-            ),
-            onPressed: () async {
-              final DateTimeRange? dateRange = await showDateRangePicker(
-                context: context,
-                firstDate: DateTime(2000),
-                lastDate: DateTime.now(),
-                initialDateRange: provider.startDate != null && provider.endDate != null
-                    ? DateTimeRange(
-                        start: provider.startDate!,
-                        end: provider.endDate!,
-                      )
-                    : null,
-              );
-              if (dateRange != null) {
-                provider.setDateRange(dateRange.start, dateRange.end);
-              }
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Icon(Icons.calendar_today, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    provider.startDate != null && provider.endDate != null
-                        ? '${DateFormat('dd/MM/yyyy').format(provider.startDate!)} - ${DateFormat('dd/MM/yyyy').format(provider.endDate!)}'
-                        : 'Select Date Range',
-                    overflow: TextOverflow.ellipsis,
+        MenuAnchor(
+          builder: (context, controller, child) {
+            return SizedBox(
+              height: 48, // Match TextField height
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  minimumSize: const Size.fromHeight(48),
+                  side: const BorderSide(color: Colors.grey), // Match TextField border
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.0), // Match TextField border radius
                   ),
                 ),
-              ],
-            ),
-          ),
+                onPressed: () async {
+                  controller.close();
+                  final dateRange = await showDateRangePicker(
+                    context: context,
+                    firstDate: DateTime(2000),
+                    lastDate: provider.latestTransactionDate,
+                    initialDateRange: provider.startDate != null && provider.endDate != null
+                        ? DateTimeRange(
+                            start: provider.startDate!,
+                            end: provider.endDate!,
+                          )
+                        : null,
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          dialogTheme: DialogTheme(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 500,
+                              maxHeight: 600,
+                            ),
+                            child: child!,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                  if (dateRange != null) {
+                    provider.setDateRange(dateRange.start, dateRange.end);
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.calendar_today, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        provider.startDate != null && provider.endDate != null
+                            ? '${DateFormat('dd/MM/yyyy').format(provider.startDate!)} - ${DateFormat('dd/MM/yyyy').format(provider.endDate!)}'
+                            : 'Select Date Range',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          menuChildren: const [], // We don't need menu children as we're using showDateRangePicker
         ),
       ],
     );

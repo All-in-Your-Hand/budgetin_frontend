@@ -30,4 +30,13 @@ class SidebarProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void initializeForScreenSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 650) {
+      // Common breakpoint for mobile
+      _isCollapsed = true;
+      notifyListeners();
+    }
+  }
 }

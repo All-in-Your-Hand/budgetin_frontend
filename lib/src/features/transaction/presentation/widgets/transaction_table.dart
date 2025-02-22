@@ -40,8 +40,23 @@ class TransactionTable extends StatelessWidget {
 ///
 /// This widget is responsible for rendering the actual table and filter UI.
 /// It's private because it's an implementation detail of [TransactionTable].
-class _TransactionTableView extends StatelessWidget {
+class _TransactionTableView extends StatefulWidget {
   const _TransactionTableView({Key? key}) : super(key: key);
+
+  @override
+  State<_TransactionTableView> createState() => _TransactionTableViewState();
+}
+
+class _TransactionTableViewState extends State<_TransactionTableView> {
+  final ScrollController _filterScrollController = ScrollController();
+  final ScrollController _tableScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _filterScrollController.dispose();
+    _tableScrollController.dispose();
+    super.dispose();
+  }
 
   /// Gets the account name for a given transaction, returning "(Deleted Account)" if not found.
   ///
@@ -97,6 +112,7 @@ class _TransactionTableView extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
+                    controller: _tableScrollController,
                     scrollDirection: Axis.horizontal,
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
@@ -248,44 +264,63 @@ class _TransactionTableView extends StatelessWidget {
   }
 
   Widget _buildFilters(BuildContext context, TransactionTableProvider provider) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              Flexible(
-                flex: 20,
-                child: _buildToFilter(provider),
-              ),
-              const SizedBox(width: 12),
-              Flexible(
-                flex: 25,
-                child: _buildDateFilter(context, provider),
-              ),
-              const SizedBox(width: 12),
-              Flexible(
-                flex: 20,
-                child: _buildTypeFilter(provider),
-              ),
-              const SizedBox(width: 12),
-              Flexible(
-                flex: 35,
-                child: _buildAmountFilter(provider),
-              ),
-              const SizedBox(width: 12),
-              ElevatedButton(
-                onPressed: provider.resetFilters,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        // Match DataTable's minimum width:
+        // horizontalMargin (24 * 2) + columnSpacing (56 * 7) + minimum column widths
+        const minWidth = 1172.0;
+        return SingleChildScrollView(
+          controller: _filterScrollController,
+          scrollDirection: Axis.horizontal,
+          child: Container(
+            width: width < minWidth ? minWidth : width,
+            child: Card(
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        flex: 20,
+                        fit: FlexFit.tight,
+                        child: _buildToFilter(provider),
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        flex: 25,
+                        fit: FlexFit.tight,
+                        child: _buildDateFilter(context, provider),
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        flex: 20,
+                        fit: FlexFit.tight,
+                        child: _buildTypeFilter(provider),
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        flex: 35,
+                        fit: FlexFit.tight,
+                        child: _buildAmountFilter(provider),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: provider.resetFilters,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        ),
+                        child: const Text('Reset Filters'),
+                      ),
+                    ],
+                  ),
                 ),
-                child: const Text('Reset Filters'),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

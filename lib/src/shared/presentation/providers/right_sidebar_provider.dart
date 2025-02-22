@@ -48,4 +48,13 @@ class RightSidebarProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Initializes the sidebar for the screen size.
+  void initializeForScreenSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 650) {
+      _isExpanded = true;
+      notifyListeners();
+    }
+  }
 }

@@ -14,12 +14,14 @@ class WebScrollBehavior extends ScrollBehavior {
     Widget child,
     ScrollableDetails details,
   ) {
-    return kIsWeb
-        ? Scrollbar(
-            controller: details.controller,
-            thumbVisibility: true,
-            child: child,
-          )
-        : child;
+    if (!kIsWeb) return child;
+
+    // For web platform, show scrollbars
+    return Scrollbar(
+      controller: details.controller,
+      thumbVisibility: true, // Always show scrollbars on web
+      thickness: 8.0,
+      child: child,
+    );
   }
 }

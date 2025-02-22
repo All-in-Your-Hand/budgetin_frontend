@@ -207,7 +207,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
           children: [
             Material(
               child: InkWell(
-                onTap: rightSidebarProvider.toggleExpanded,
+                onTap: () => rightSidebarProvider.toggleExpanded(context),
                 child: Container(
                   width: 24,
                   height: double.infinity,

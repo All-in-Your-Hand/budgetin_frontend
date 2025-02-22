@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/sidebar_provider.dart';
+import '../providers/right_sidebar_provider.dart';
 import 'sidebar.dart';
 import 'right_sidebar.dart';
 import 'footer.dart';
 
 /// A scaffold widget that provides the main layout structure for the app.
-class AppScaffold extends StatelessWidget {
+class AppScaffold extends StatefulWidget {
   /// Creates a new instance of [AppScaffold].
   const AppScaffold({
     super.key,
@@ -19,6 +22,25 @@ class AppScaffold extends StatelessWidget {
   final int currentIndex;
 
   @override
+  State<AppScaffold> createState() => _AppScaffoldState();
+}
+
+class _AppScaffoldState extends State<AppScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    // Schedule the initialization for after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sidebarProvider = context.read<SidebarProvider>();
+      final rightSidebarProvider = context.read<RightSidebarProvider>();
+
+      // Initialize both sidebars based on screen size
+      sidebarProvider.initializeForScreenSize(context);
+      rightSidebarProvider.initializeForScreenSize(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
@@ -26,9 +48,9 @@ class AppScaffold extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Sidebar(currentIndex: currentIndex),
+                Sidebar(currentIndex: widget.currentIndex),
                 Expanded(
-                  child: body,
+                  child: widget.body,
                 ),
                 const RightSidebar(),
               ],

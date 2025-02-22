@@ -67,7 +67,7 @@ class Sidebar extends StatelessWidget {
                       child: IconButton(
                         icon: const Icon(Icons.chevron_left),
                         color: Theme.of(context).colorScheme.onSurface,
-                        onPressed: () => provider.toggleCollapsed(),
+                        onPressed: () => provider.toggleCollapsed(context),
                         tooltip: isCollapsed ? 'Expand' : 'Collapse',
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),

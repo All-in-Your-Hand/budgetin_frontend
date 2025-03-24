@@ -76,6 +76,11 @@ class AuthProvider extends ChangeNotifier {
         _user = response;
         _isAuthenticated = true;
 
+        // Store user id securely
+        if (response.userId != null) {
+          await _storage.write(key: 'user_id', value: response.userId!);
+        }
+
         // Store tokens securely
         if (response.token != null) {
           await _storage.write(key: 'access_token', value: response.token!);
@@ -100,11 +105,40 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadUserData() async {
+    final token = await _storage.read(key: 'access_token');
+    if (token == null) {
+      _isAuthenticated = false;
+      _user = null;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      // Get stored user data
+      final userId = await _storage.read(key: 'user_id');
+      if (userId != null) {
+        _user = AuthResponseModel(
+          userId: userId,
+          token: token,
+          refreshToken: await _storage.read(key: 'refresh_token'),
+        );
+        _isAuthenticated = true;
+      } else {
+        _user = null;
+        _isAuthenticated = false;
+      }
+    } catch (e) {
+      _user = null;
+      _isAuthenticated = false;
+      await _storage.deleteAll();
+    }
+    notifyListeners();
+  }
+
   /// Checks if there's a valid token stored
   Future<bool> checkAuthStatus() async {
-    final token = await _storage.read(key: 'access_token');
-    _isAuthenticated = token != null;
-    notifyListeners();
+    await loadUserData();
     return _isAuthenticated;
   }
 }

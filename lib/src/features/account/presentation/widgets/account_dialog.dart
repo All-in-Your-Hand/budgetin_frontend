@@ -2,9 +2,9 @@ import 'package:budgetin_frontend/src/features/account/domain/models/account_mod
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../domain/models/account_request.dart';
 import '../providers/account_provider.dart';
-import '../../../../core/utils/constant/network_constants.dart';
 import '../../../../shared/presentation/widgets/custom_snackbar.dart';
 
 /// A dialog widget for adding or editing accounts.
@@ -69,18 +69,20 @@ class _AccountDialogState extends State<AccountDialog> {
   Future<void> _handleSubmit(BuildContext context, AccountProvider provider) async {
     if (!_formKey.currentState!.validate()) return;
 
+    final userId = context.read<AuthProvider>().user?.userId ?? '';
+
     try {
       final request = widget.account != null
           ? UpdateAccountRequest(
               account: AccountModel(
                 id: widget.account!.id,
-                userId: NetworkConstants.testUserId,
+                userId: userId,
                 accountName: _accountNameController.text.trim(),
                 balance: double.parse(_balanceController.text),
               ),
             )
           : AddAccountRequest(
-              userId: NetworkConstants.testUserId,
+              userId: userId,
               accountName: _accountNameController.text.trim(),
               balance: double.parse(_balanceController.text),
             );
@@ -93,7 +95,7 @@ class _AccountDialogState extends State<AccountDialog> {
       }
 
       if (success) {
-        await provider.getAccounts(NetworkConstants.testUserId);
+        await provider.getAccounts(userId);
         if (context.mounted) {
           Navigator.pop(context);
           CustomSnackbar.show(

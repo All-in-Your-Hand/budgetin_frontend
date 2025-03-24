@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/presentation/widgets/app_scaffold.dart';
 import '../../../../shared/presentation/widgets/web_responsive_layout.dart';
+import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../providers/account_provider.dart';
 import '../widgets/account_card.dart';
 import '../widgets/add_account_card.dart';
-import '../../../../core/utils/constant/network_constants.dart';
 
 /// The accounts page that displays user's financial accounts.
 class AccountsPage extends StatefulWidget {
@@ -20,7 +20,6 @@ class _AccountsPageState extends State<AccountsPage> {
   @override
   void initState() {
     super.initState();
-    // TODO: Replace with actual user ID from auth provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadAccounts();
     });
@@ -29,7 +28,7 @@ class _AccountsPageState extends State<AccountsPage> {
   /// Loads or reloads the accounts for the current user
   Future<void> _loadAccounts() async {
     if (!mounted) return;
-    await context.read<AccountProvider>().getAccounts(NetworkConstants.testUserId);
+    await context.read<AccountProvider>().getAccounts(context.read<AuthProvider>().user?.userId ?? '');
   }
 
   @override

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_table_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
-import '../../../../core/utils/constant/network_constants.dart';
 import '../../../../shared/presentation/providers/right_sidebar_provider.dart';
 import 'delete_transaction_dialog.dart';
 
@@ -91,8 +91,7 @@ class _TransactionTableViewState extends State<_TransactionTableView> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () =>
-                      transactionProvider.getTransactions(NetworkConstants.testUserId), // TODO: Get from auth provider
+                  onPressed: () => transactionProvider.getTransactions(context.read<AuthProvider>().user?.userId ?? ''),
                   child: const Text('Retry'),
                 ),
               ],

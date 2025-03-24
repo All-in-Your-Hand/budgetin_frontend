@@ -5,6 +5,7 @@ import '../../../../../core/utils/constant/network_constants.dart';
 import '../../../domain/models/transaction_response.dart';
 import 'package:budgetin_frontend/src/features/transaction/domain/models/transaction_request.dart';
 import 'package:budgetin_frontend/src/core/network/error/dio_error_handler.dart';
+import 'package:budgetin_frontend/src/core/storage/storage_service.dart';
 
 /// Remote data source interface for transaction-related API operations.
 /// Handles all network requests related to transaction management including
@@ -39,18 +40,34 @@ abstract class TransactionRemoteDataSource {
 /// using Dio HTTP client.
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   final Dio _dio;
+  final StorageService _storage;
 
   /// Creates a new [TransactionRemoteDataSourceImpl] instance with required dependencies.
   ///
   /// [dio] The Dio HTTP client instance for making API requests.
-  TransactionRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
+  /// [storage] The storage service for accessing the JWT token.
+  TransactionRemoteDataSourceImpl({
+    required Dio dio,
+    required StorageService storage,
+  })  : _dio = dio,
+        _storage = storage;
+
+  /// Gets the authorization header with the JWT token.
+  Future<Map<String, String>> _getAuthHeaders() async {
+    final token = await _storage.read(key: 'access_token');
+    return {
+      'Authorization': 'Bearer $token',
+    };
+  }
 
   @override
   Future<Either<NetworkException, String>> addTransaction(AddTransactionRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.post(
         NetworkConstants.transactionEndpoint,
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200) {
@@ -72,8 +89,10 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   @override
   Future<Either<NetworkException, TransactionResponse>> getTransactions(GetTransactionRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.get(
         NetworkConstants.getTransactionsByUserId(request.userId),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200 || response.statusCode == 302) {
@@ -95,9 +114,11 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   @override
   Future<Either<NetworkException, String>> updateTransaction(UpdateTransactionRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.put(
         NetworkConstants.transactionEndpoint,
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200) {
@@ -119,9 +140,11 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   @override
   Future<Either<NetworkException, String>> deleteTransaction(DeleteTransactionRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.delete(
         NetworkConstants.transactionEndpoint,
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200) {

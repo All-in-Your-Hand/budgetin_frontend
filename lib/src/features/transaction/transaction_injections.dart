@@ -6,6 +6,7 @@ import 'domain/repositories/transaction_repository.dart';
 import 'presentation/providers/transaction_provider.dart';
 import 'presentation/providers/transaction_table_provider.dart';
 import '../../core/utils/log/app_logger.dart';
+import '../../core/storage/storage_service.dart';
 
 /// Sets up all transaction-related dependencies in the dependency injection container.
 ///
@@ -22,7 +23,10 @@ void setupTransactionInjections() {
 
     // Data sources
     getIt.registerLazySingleton<TransactionRemoteDataSource>(
-      () => TransactionRemoteDataSourceImpl(dio: getIt()),
+      () => TransactionRemoteDataSourceImpl(
+        dio: getIt(),
+        storage: getIt<StorageService>(),
+      ),
     );
 
     // Repositories

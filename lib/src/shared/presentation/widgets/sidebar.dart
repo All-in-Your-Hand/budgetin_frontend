@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/sidebar_provider.dart';
+import '../../../features/authentication/presentation/providers/auth_provider.dart';
 
 /// A sidebar widget that provides navigation options for the app.
 class Sidebar extends StatelessWidget {
@@ -131,6 +132,23 @@ class Sidebar extends StatelessWidget {
                   ),
                 ),
               ),
+              const Divider(
+                color: Color.fromARGB(158, 178, 192, 192),
+                thickness: 1,
+              ),
+              _SidebarItem(
+                icon: Icons.logout_outlined,
+                label: 'Logout',
+                isSelected: false,
+                onTap: () async {
+                  await context.read<AuthProvider>().signOut();
+                  if (context.mounted) {
+                    context.go('/signin');
+                  }
+                },
+                isCollapsed: isCollapsed,
+              ),
+              const SizedBox(height: 8),
             ],
           ),
         );

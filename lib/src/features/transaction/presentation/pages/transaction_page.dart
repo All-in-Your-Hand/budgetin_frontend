@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/utils/constant/network_constants.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../shared/presentation/widgets/app_scaffold.dart';
+import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_table.dart';
 import '../../../../shared/presentation/widgets/web_responsive_layout.dart';
@@ -40,7 +40,7 @@ class _TransactionPageState extends State<TransactionPage> {
   /// all necessary data is available for the transaction table.
   void _fetchData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      const userId = NetworkConstants.testUserId; // TODO: Get from auth provider
+      final userId = context.read<AuthProvider>().user?.userId ?? '';
       if (mounted) {
         context.read<TransactionProvider>().getTransactions(userId);
         context.read<AccountProvider>().getAccounts(userId);

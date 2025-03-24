@@ -5,7 +5,6 @@ class NetworkConstants {
   /// Base URL for the API
   static const String baseUrl = 'http://localhost:8080/api';
   static const String androidBaseUrl = 'http://10.0.2.2:8080/api';
-  static const String testUserId = '67ae65bd8e43eb19a8593a81';
 
   /// API version
   static const String apiVersion = 'v0';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
-import '../../../../core/utils/constant/network_constants.dart';
 import '../../../../shared/presentation/widgets/custom_snackbar.dart';
 
 /// A dialog for deleting a transaction.
@@ -47,12 +47,13 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
 
   Future<void> _handleSubmit(BuildContext context, TransactionProvider provider) async {
     bool success;
+    final userId = context.read<AuthProvider>().user?.userId ?? '';
     success = await provider.deleteTransaction(
       widget.transaction.transactionId,
-      NetworkConstants.testUserId,
+      userId,
     );
     if (success) {
-      await provider.getTransactions(NetworkConstants.testUserId);
+      await provider.getTransactions(userId);
       if (context.mounted) {
         Navigator.pop(context);
         CustomSnackbar.show(

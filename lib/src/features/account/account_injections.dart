@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../core/utils/log/app_logger.dart';
+import '../../core/storage/storage_service.dart';
 import 'data/data_sources/remote/account_remote_data_source.dart';
 import 'data/repositories/account_repository_impl.dart';
 import 'domain/repositories/account_repository.dart';
@@ -20,7 +21,10 @@ void setupAccountInjections() {
 
     // Data sources
     getIt.registerLazySingleton<AccountRemoteDataSource>(
-      () => AccountRemoteDataSourceImpl(dio: getIt()),
+      () => AccountRemoteDataSourceImpl(
+        dio: getIt(),
+        storage: getIt<StorageService>(),
+      ),
     );
 
     // Repositories

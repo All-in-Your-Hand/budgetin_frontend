@@ -2,10 +2,12 @@ import 'package:budgetin_frontend/src/features/authentication/presentation/pages
 import 'package:budgetin_frontend/src/features/authentication/presentation/pages/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/authentication/presentation/providers/auth_provider.dart';
 import '../../features/transaction/presentation/pages/transaction_page.dart';
 import '../../features/account/presentation/pages/accounts_page.dart';
 import '../exceptions/route_exception.dart';
 import '../utils/log/app_logger.dart';
+import 'package:provider/provider.dart';
 
 /// Custom page transition that fades between pages
 ///
@@ -53,6 +55,19 @@ class RouteErrorPage extends StatelessWidget {
 /// Uses custom transition animations for smooth page transitions.
 final GoRouter router = GoRouter(
   initialLocation: '/signin',
+  redirect: (context, state) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAuthenticated = await authProvider.checkAuthStatus();
+
+    final isAuthRoute = state.matchedLocation == '/signin' || state.matchedLocation == '/signup';
+
+    if (!isAuthenticated && !isAuthRoute) {
+      return '/signin';
+    } else if (isAuthenticated && isAuthRoute) {
+      return '/transactions';
+    }
+    return null;
+  },
   errorBuilder: (context, state) {
     final error = state.error;
     if (error != null) {

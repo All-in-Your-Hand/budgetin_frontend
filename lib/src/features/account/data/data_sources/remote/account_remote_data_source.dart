@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:budgetin_frontend/src/core/exceptions/network_exception.dart';
 import 'package:budgetin_frontend/src/core/utils/constant/network_constants.dart';
 import 'package:budgetin_frontend/src/features/account/domain/models/account_request.dart';
+import 'package:budgetin_frontend/src/core/storage/storage_service.dart';
 import 'package:dartz/dartz.dart';
 
 /// Remote data source interface for account-related API operations.
@@ -39,17 +40,33 @@ abstract class AccountRemoteDataSource {
 /// using Dio HTTP client.
 class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   final Dio _dio;
+  final StorageService _storage;
 
   /// Creates a new [AccountRemoteDataSourceImpl] instance with required dependencies.
   ///
   /// [dio] The Dio HTTP client instance for making API requests.
-  AccountRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
+  /// [storage] The storage service for accessing the JWT token.
+  AccountRemoteDataSourceImpl({
+    required Dio dio,
+    required StorageService storage,
+  })  : _dio = dio,
+        _storage = storage;
+
+  /// Gets the authorization header with the JWT token.
+  Future<Map<String, String>> _getAuthHeaders() async {
+    final token = await _storage.read(key: 'access_token');
+    return {
+      'Authorization': 'Bearer $token',
+    };
+  }
 
   @override
   Future<Either<NetworkException, AccountResponse>> getAccounts(GetAccountRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.get(
         NetworkConstants.getAccountsByUserId(request.userId),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200 || response.statusCode == 302) {
@@ -71,9 +88,11 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   @override
   Future<Either<NetworkException, String>> addAccount(AddAccountRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.post(
         NetworkConstants.accountEndpoint,
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 201) {
@@ -95,9 +114,11 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   @override
   Future<Either<NetworkException, String>> updateAccount(UpdateAccountRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.put(
         NetworkConstants.accountEndpoint,
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200) {
@@ -119,9 +140,11 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   @override
   Future<Either<NetworkException, String>> deleteAccount(DeleteAccountRequest request) async {
     try {
+      final headers = await _getAuthHeaders();
       final response = await _dio.delete(
         NetworkConstants.accountEndpoint,
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       if (response.statusCode == 200) {

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../features/authentication/presentation/providers/auth_provider.dart';
 import '../../../features/transaction/presentation/providers/transaction_provider.dart';
 import '../../../features/account/presentation/providers/account_provider.dart';
-import '../../../core/utils/constant/network_constants.dart';
 import '../providers/right_sidebar_provider.dart';
 import './custom_snackbar.dart';
 
@@ -117,7 +117,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
     _notesController.clear();
   }
 
-  Future<void> _handleSubmit(BuildContext context, TransactionProvider provider) async {
+  Future<void> _handleSubmit(BuildContext context, TransactionProvider provider, AuthProvider authProvider) async {
     if (!_formKey.currentState!.validate()) return;
 
     final dateParts = _dateController.text.split('/');
@@ -152,7 +152,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
       success = await provider.updateTransaction(updateRequest);
     } else {
       final request = AddTransactionRequest(
-        userId: NetworkConstants.testUserId,
+        userId: authProvider.user?.userId ?? '',
         accountId: _accountController.text,
         transactionType: _typeController.text,
         transactionCategory: _categoryController.text,
@@ -166,7 +166,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
     }
 
     if (success) {
-      await provider.getTransactions(NetworkConstants.testUserId);
+      await provider.getTransactions(authProvider.user?.userId ?? '');
       if (context.mounted) {
         _clearForm();
         rightSidebarProvider.cancelEditing();
@@ -225,8 +225,8 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
               child: Container(
                 width: 320,
                 color: Theme.of(context).colorScheme.surface,
-                child: Consumer2<TransactionProvider, AccountProvider>(
-                  builder: (context, transactionProvider, accountProvider, _) {
+                child: Consumer3<TransactionProvider, AccountProvider, AuthProvider>(
+                  builder: (context, transactionProvider, accountProvider, authProvider, _) {
                     return LayoutBuilder(
                       builder: (context, constraints) {
                         return SingleChildScrollView(
@@ -287,7 +287,8 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
                                               ],
                                               Expanded(
                                                 child: ElevatedButton(
-                                                  onPressed: () => _handleSubmit(context, transactionProvider),
+                                                  onPressed: () =>
+                                                      _handleSubmit(context, transactionProvider, authProvider),
                                                   child: Text(
                                                     rightSidebarProvider.isEditing
                                                         ? 'Update Transaction'

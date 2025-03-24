@@ -1,4 +1,5 @@
 import 'package:budgetin_frontend/src/features/authentication/presentation/pages/sign_up_page.dart';
+import 'package:budgetin_frontend/src/features/authentication/presentation/pages/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/transaction/presentation/pages/transaction_page.dart';
@@ -51,7 +52,7 @@ class RouteErrorPage extends StatelessWidget {
 /// Defines the routing table and handles navigation between different pages.
 /// Uses custom transition animations for smooth page transitions.
 final GoRouter router = GoRouter(
-  initialLocation: '/transactions',
+  initialLocation: '/signin',
   errorBuilder: (context, state) {
     final error = state.error;
     if (error != null) {
@@ -72,6 +73,15 @@ final GoRouter router = GoRouter(
         context: context,
         state: state,
         child: const SignUpPage(),
+      ),
+    ),
+    GoRoute(
+      path: '/signin',
+      name: 'signin',
+      pageBuilder: (context, state) => _buildPageWithDefaultTransition(
+        context: context,
+        state: state,
+        child: const SignInPage(),
       ),
     ),
     GoRoute(

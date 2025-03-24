@@ -5,18 +5,23 @@ import '../../domain/models/auth_response_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../data_sources/remote/auth_remote_data_source.dart';
 
+/// Implementation of [AuthRepository] that handles the coordination between
+/// remote data sources and implements the business logic for authentication operations.
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
+  final AuthRemoteDataSource _remoteDataSource;
 
-  AuthRepositoryImpl({required this.remoteDataSource});
+  /// Creates a new [AuthRepositoryImpl] instance.
+  ///
+  /// Requires an [AuthRemoteDataSource] for handling network operations.
+  AuthRepositoryImpl({required AuthRemoteDataSource remoteDataSource}) : _remoteDataSource = remoteDataSource;
 
   @override
   Future<Either<NetworkException, AuthResponseModel>> createUser(AuthRequestModel request) async {
-    try {
-      final response = await remoteDataSource.createUser(request);
-      return Right(response);
-    } on NetworkException catch (e) {
-      return Left(e);
-    }
+    final response = await _remoteDataSource.createUser(request);
+
+    return response.fold(
+      (failure) => Left(failure),
+      (authResponse) => Right(authResponse),
+    );
   }
 }

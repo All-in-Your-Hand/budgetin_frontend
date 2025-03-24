@@ -8,8 +8,11 @@ Consider extracting validation logic to a separate class. From transaction provi
 
 Add a did edit check before updating the transaction. If it is not edited, then don't update it.
 
-Try to make the filter section horizontally scrollable on small screens. Try take make the filter and transaction table sections
-as a whole so that they can be scrolled as a whole.
+Try take make the filter and transaction table sections as a whole so that they can be scrolled as a whole. "Couldn't do it"
+
+Fix the right sidebar animation. On page transitions, the right sidebar does the expansion animation.
+
+Hold account card color info in the account model. Store it in the database.
 
 BACKEND TODO:
 

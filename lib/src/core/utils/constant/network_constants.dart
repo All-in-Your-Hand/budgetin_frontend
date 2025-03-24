@@ -4,6 +4,7 @@ class NetworkConstants {
 
   /// Base URL for the API
   static const String baseUrl = 'http://localhost:8080/api';
+  static const String androidBaseUrl = 'http://10.0.2.2:8080/api';
   static const String testUserId = '67ae65bd8e43eb19a8593a81';
 
   /// API version
@@ -18,6 +19,7 @@ class NetworkConstants {
 
   /// Common API endpoints
   static const String authEndpoint = '$apiUrl/auth';
+  static const String authRegisterEndpoint = 'http://localhost:8080/auth/register';
   static const String transactionEndpoint = '$apiUrl/transactions';
   static const String userEndpoint = '$apiUrl/users';
   static const String accountEndpoint = '$apiUrl/accounts';

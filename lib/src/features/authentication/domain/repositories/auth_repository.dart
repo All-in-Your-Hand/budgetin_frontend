@@ -11,4 +11,11 @@ abstract class AuthRepository {
   /// - Left: [NetworkException] if the operation fails
   /// - Right: [AuthResponseModel] if successful
   Future<Either<NetworkException, AuthResponseModel>> createUser(AuthRequestModel request);
+
+  /// Signs in a user with email and password
+  ///
+  /// Returns a [Future] that resolves to an [Either] containing either:
+  /// - Left: [NetworkException] if the operation fails
+  /// - Right: [AuthResponseModel] if successful, containing the JWT tokens
+  Future<Either<NetworkException, AuthResponseModel>> login(AuthRequestModel request);
 }

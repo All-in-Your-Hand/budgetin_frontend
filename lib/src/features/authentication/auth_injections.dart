@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../../core/storage/storage_service.dart';
 import 'data/data_sources/remote/auth_remote_data_source.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'domain/repositories/auth_repository.dart';
@@ -9,6 +10,13 @@ import 'presentation/providers/auth_provider.dart';
 void setupAuthInjections() {
   try {
     final getIt = GetIt.instance;
+
+    // Storage service
+    if (!getIt.isRegistered<StorageService>()) {
+      getIt.registerLazySingleton<StorageService>(
+        () => StorageServiceImpl(),
+      );
+    }
 
     // Data sources
     getIt.registerLazySingleton<AuthRemoteDataSource>(
@@ -22,7 +30,10 @@ void setupAuthInjections() {
 
     // Providers
     getIt.registerFactory<AuthProvider>(
-      () => AuthProvider(repository: getIt()),
+      () => AuthProvider(
+        repository: getIt(),
+        storage: getIt(),
+      ),
     );
   } catch (e) {
     print('Error setting up auth injections: $e');

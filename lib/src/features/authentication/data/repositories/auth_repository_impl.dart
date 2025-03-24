@@ -24,4 +24,14 @@ class AuthRepositoryImpl implements AuthRepository {
       (authResponse) => Right(authResponse),
     );
   }
+
+  @override
+  Future<Either<NetworkException, AuthResponseModel>> login(AuthRequestModel request) async {
+    final response = await _remoteDataSource.loginUser(request);
+
+    return response.fold(
+      (failure) => Left(failure),
+      (authResponse) => Right(authResponse),
+    );
+  }
 }

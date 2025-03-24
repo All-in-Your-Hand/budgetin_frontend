@@ -17,6 +17,13 @@ abstract class AuthRemoteDataSource {
   /// Throws [NetworkException] if the registration fails.
   /// [request] contains the user registration details including name, email, and password.
   Future<Either<NetworkException, AuthResponseModel>> createUser(AuthRequestModel request);
+
+  /// Login a user with the provided details.
+  ///
+  /// Returns [AuthResponseModel] on successful login.
+  /// Throws [NetworkException] if the login fails.
+  /// [request] contains the user login details including email and password.
+  Future<Either<NetworkException, AuthResponseModel>> loginUser(AuthRequestModel request);
 }
 
 /// Implementation of [AuthRemoteDataSource] that handles actual API calls
@@ -47,6 +54,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       } else {
         return left(NetworkException(
           message: response.data['message'] ?? 'Failed to create user',
+          statusCode: response.statusCode,
+        ));
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data?['message'] ?? handleDioError(e);
+      return left(NetworkException(
+        message: message,
+        statusCode: e.response?.statusCode,
+      ));
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, AuthResponseModel>> loginUser(AuthRequestModel request) async {
+    try {
+      final response = await _dio.post(
+        NetworkConstants.authLoginEndpoint,
+        data: request.toJson(),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return right(AuthResponseModel.fromJson(response.data));
+      } else {
+        return left(NetworkException(
+          message: response.data['message'] ?? 'Failed to login',
           statusCode: response.statusCode,
         ));
       }

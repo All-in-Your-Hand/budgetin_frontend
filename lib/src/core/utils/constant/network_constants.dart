@@ -19,7 +19,10 @@ class NetworkConstants {
 
   /// Common API endpoints
   static const String authEndpoint = '$apiUrl/auth';
+
+  /// TODO: Update the authRegisterEndpoint and authLoginEndpoint constants to use the proper declaration.
   static const String authRegisterEndpoint = 'http://localhost:8080/auth/register';
+  static const String authLoginEndpoint = 'http://localhost:8080/auth/login';
   static const String transactionEndpoint = '$apiUrl/transactions';
   static const String userEndpoint = '$apiUrl/users';
   static const String accountEndpoint = '$apiUrl/accounts';

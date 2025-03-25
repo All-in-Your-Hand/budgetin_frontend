@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../account/presentation/providers/account_provider.dart';
 import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../domain/models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
@@ -47,16 +48,20 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
     super.dispose();
   }
 
-  Future<void> _handleSubmit(BuildContext context, TransactionProvider provider) async {
+  Future<void> _handleSubmit(
+      BuildContext context, TransactionProvider transactionProvider, AccountProvider accountProvider) async {
     bool success;
     final userId = context.read<AuthProvider>().user?.userId ?? '';
-    success = await provider.deleteTransaction(
+    success = await transactionProvider.deleteTransaction(
       widget.transaction.transactionId,
       userId,
       _shouldUpdateBalance,
     );
     if (success) {
-      await provider.getTransactions(userId);
+      await transactionProvider.getTransactions(userId);
+      if (_shouldUpdateBalance) {
+        await accountProvider.getAccounts(userId);
+      }
       if (context.mounted) {
         Navigator.pop(context);
         CustomSnackbar.show(
@@ -76,8 +81,8 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TransactionProvider>(
-      builder: (context, provider, _) {
+    return Consumer2<TransactionProvider, AccountProvider>(
+      builder: (context, transactionProvider, accountProvider, _) {
         return Dialog(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
@@ -123,7 +128,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                 const SizedBox(height: 24),
                 _ActionButtons(
                   onCancel: () => Navigator.pop(context),
-                  onDelete: () => _handleSubmit(context, provider),
+                  onDelete: () => _handleSubmit(context, transactionProvider, accountProvider),
                 ),
               ],
             ),

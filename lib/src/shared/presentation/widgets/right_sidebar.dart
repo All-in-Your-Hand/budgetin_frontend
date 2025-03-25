@@ -117,7 +117,8 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
     _notesController.clear();
   }
 
-  Future<void> _handleSubmit(BuildContext context, TransactionProvider provider, AuthProvider authProvider) async {
+  Future<void> _handleSubmit(BuildContext context, TransactionProvider transactionProvider, AuthProvider authProvider,
+      AccountProvider accountProvider) async {
     if (!_formKey.currentState!.validate()) return;
 
     final dateParts = _dateController.text.split('/');
@@ -149,7 +150,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
       );
 
       final updateRequest = UpdateTransactionRequest(transaction: updatedTransaction);
-      success = await provider.updateTransaction(updateRequest);
+      success = await transactionProvider.updateTransaction(updateRequest);
     } else {
       final request = AddTransactionRequest(
         userId: authProvider.user?.userId ?? '',
@@ -162,12 +163,13 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
         to: _toController.text,
       );
 
-      success = await provider.addTransaction(request);
+      success = await transactionProvider.addTransaction(request);
     }
 
     if (success) {
-      await provider.getTransactions(authProvider.user?.userId ?? '');
-      await context.read<AccountProvider>().getAccounts(authProvider.user?.userId ?? '');
+      // Implement the error handling if the userId is not found.
+      await transactionProvider.getTransactions(authProvider.user?.userId ?? '');
+      await accountProvider.getAccounts(authProvider.user?.userId ?? '');
       if (context.mounted) {
         _clearForm();
         rightSidebarProvider.cancelEditing();
@@ -182,7 +184,8 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
         CustomSnackbar.show(
           context: context,
           isSuccess: false,
-          message: provider.error ?? 'Failed to ${editingTransaction != null ? 'update' : 'add'} transaction',
+          message:
+              transactionProvider.error ?? 'Failed to ${editingTransaction != null ? 'update' : 'add'} transaction',
         );
       }
     }
@@ -288,8 +291,8 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
                                               ],
                                               Expanded(
                                                 child: ElevatedButton(
-                                                  onPressed: () =>
-                                                      _handleSubmit(context, transactionProvider, authProvider),
+                                                  onPressed: () => _handleSubmit(
+                                                      context, transactionProvider, authProvider, accountProvider),
                                                   child: Text(
                                                     rightSidebarProvider.isEditing
                                                         ? 'Update Transaction'

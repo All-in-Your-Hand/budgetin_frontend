@@ -167,6 +167,7 @@ class _RightSidebarState extends State<RightSidebar> with SingleTickerProviderSt
 
     if (success) {
       await provider.getTransactions(authProvider.user?.userId ?? '');
+      await context.read<AccountProvider>().getAccounts(authProvider.user?.userId ?? '');
       if (context.mounted) {
         _clearForm();
         rightSidebarProvider.cancelEditing();

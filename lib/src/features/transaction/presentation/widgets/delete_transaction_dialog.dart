@@ -35,6 +35,8 @@ class DeleteTransactionDialog extends StatefulWidget {
 }
 
 class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
+  bool _shouldUpdateBalance = true;
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +53,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
     success = await provider.deleteTransaction(
       widget.transaction.transactionId,
       userId,
+      _shouldUpdateBalance,
     );
     if (success) {
       await provider.getTransactions(userId);
@@ -97,6 +100,25 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                 const Text(
                   'Are you sure you want to delete this transaction?',
                   style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _shouldUpdateBalance,
+                      onChanged: (value) {
+                        setState(() {
+                          _shouldUpdateBalance = value ?? true;
+                        });
+                      },
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Update account balance when deleting this transaction',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 _ActionButtons(

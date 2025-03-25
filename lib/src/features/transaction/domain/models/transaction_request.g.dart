@@ -63,6 +63,7 @@ DeleteTransactionRequest _$DeleteTransactionRequestFromJson(
     DeleteTransactionRequest(
       transactionId: json['transactionId'] as String,
       userId: json['userId'] as String,
+      revertBalance: json['revertBalance'] as bool,
     );
 
 Map<String, dynamic> _$DeleteTransactionRequestToJson(
@@ -70,4 +71,5 @@ Map<String, dynamic> _$DeleteTransactionRequestToJson(
     <String, dynamic>{
       'transactionId': instance.transactionId,
       'userId': instance.userId,
+      'revertBalance': instance.revertBalance,
     };

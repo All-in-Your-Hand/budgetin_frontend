@@ -190,7 +190,7 @@ class TransactionProvider extends ChangeNotifier {
   ///
   /// Returns a Future that completes with true if the deletion was successful,
   /// false otherwise.
-  Future<bool> deleteTransaction(String transactionId, String userId) async {
+  Future<bool> deleteTransaction(String transactionId, String userId, bool revertBalance) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -198,6 +198,7 @@ class TransactionProvider extends ChangeNotifier {
     final request = DeleteTransactionRequest(
       transactionId: transactionId,
       userId: userId,
+      revertBalance: revertBalance,
     );
 
     final result = await _repository.deleteTransaction(request);

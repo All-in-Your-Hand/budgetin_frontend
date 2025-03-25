@@ -100,11 +100,14 @@ class DeleteTransactionRequest {
   final String transactionId;
   @JsonKey(name: 'userId')
   final String userId;
+  @JsonKey(name: 'revertBalance')
+  final bool revertBalance;
 
   /// Creates a new [DeleteTransactionRequest] instance
   const DeleteTransactionRequest({
     required this.transactionId,
     required this.userId,
+    required this.revertBalance,
   });
 
   factory DeleteTransactionRequest.fromJson(Map<String, dynamic> json) => _$DeleteTransactionRequestFromJson(json);

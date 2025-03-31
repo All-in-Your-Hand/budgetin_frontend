@@ -8,11 +8,12 @@ Consider extracting validation logic to a separate class. From transaction provi
 
 Add a did edit check before updating the transaction. If it is not edited, then don't update it.
 
-Try take make the filter and transaction table sections as a whole so that they can be scrolled as a whole. "Couldn't do it"
-
 Fix the right sidebar animation. On page transitions, the right sidebar does the expansion animation.
 
 Hold account card color info in the account model. Store it in the database.
+
+Implement account card color.
+Implement refresh token feature.
 
 BACKEND TODO:
 
@@ -20,9 +21,3 @@ BACKEND TODO:
 - DeleteAccountRequest
 
 - Account model -> isDeleted boolean field
-
-- TransactionService -> addTransaction(addTransactionRequest) -> handle account balance
-
-- TransactionService -> updateTransaction(updateTransactionRequest) -> handle account balance
-
-- TransactionService -> deleteTransaction(deleteTransactionRequest) -> handle account balance, but ask if it is ok to refund for transactions older than 30 days, refund will be asked.

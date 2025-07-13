@@ -8,6 +8,7 @@ import '../providers/transaction_table_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../shared/presentation/providers/right_sidebar_provider.dart';
+import '../../../../shared/presentation/widgets/custom_snackbar.dart';
 import 'delete_transaction_dialog.dart';
 
 /// A widget that displays transaction data in a sortable and filterable table format.
@@ -243,7 +244,14 @@ class _TransactionTableViewState extends State<_TransactionTableView> {
         children: [
           IconButton(
             icon: const Icon(FontAwesomeIcons.penToSquare, size: 16),
-            onPressed: () => context.read<RightSidebarProvider>().startEditing(transaction),
+            onPressed: () =>
+                _getAccountName(transaction.accountId, context.read<AccountProvider>()) != '(Deleted Account)'
+                    ? context.read<RightSidebarProvider>().startEditing(transaction)
+                    : CustomSnackbar.show(
+                        context: context,
+                        isSuccess: false,
+                        message: 'Cannot edit transaction with deleted account',
+                      ),
             tooltip: 'Edit Transaction',
             padding: const EdgeInsets.all(4),
             constraints: const BoxConstraints(),

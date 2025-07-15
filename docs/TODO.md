@@ -8,6 +8,8 @@ Add a did edit check before updating the transaction. If it is not edited, then 
 
 Fix the right sidebar animation. On page transitions, the right sidebar does the expansion animation.
 
+Fix deleted account transactions delete option.
+
 Hold account card color info in the account model. Store it in the database.
 
 Implement account card color.

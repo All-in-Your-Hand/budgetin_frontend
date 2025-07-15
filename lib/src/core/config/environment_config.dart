@@ -5,18 +5,14 @@ import 'package:flutter/foundation.dart';
 class EnvironmentConfig {
   EnvironmentConfig._();
 
-  /// Backend API URL - uses environment variable or defaults to localhost for development
-  static const String _backendUrl = String.fromEnvironment(
-    'BACKEND_URL',
-    defaultValue: 'http://localhost:8080',
-  );
+  /// Backend API URL - uses environment variable from Vercel
+  static const String _backendUrl = String.fromEnvironment('BACKEND_URL');
 
   /// Check if running in debug mode
   static bool get isDebug => kDebugMode;
 
   /// Get the backend URL
-  /// In production (Vercel), this will use the BACKEND_URL environment variable
-  /// In development, it defaults to localhost
+  /// Uses the BACKEND_URL environment variable from Vercel
   static String get backendUrl => _backendUrl;
 
   /// Get the API base URL

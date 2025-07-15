@@ -20,12 +20,9 @@ class NetworkConstants {
   static const int connectionTimeout = 30000;
   static const int receiveTimeout = 30000;
 
-  /// Common API endpoints
-  static String get authEndpoint => '$apiUrl/auth';
-
-  /// Auth endpoints using environment configuration
-  static String get authRegisterEndpoint => '${EnvironmentConfig.authBaseUrl}/auth/register';
-  static String get authLoginEndpoint => '${EnvironmentConfig.authBaseUrl}/auth/login';
+  /// Auth endpoints - these don't use /api/v0, they use the base backend URL
+  static String get authRegisterEndpoint => '${EnvironmentConfig.backendUrl}/auth/register';
+  static String get authLoginEndpoint => '${EnvironmentConfig.backendUrl}/auth/login';
 
   static String get transactionEndpoint => '$apiUrl/transactions';
   static String get userEndpoint => '$apiUrl/users';

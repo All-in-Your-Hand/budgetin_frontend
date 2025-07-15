@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'environment_config.dart';
 import 'web_config.dart';
 import 'web_scroll_behavior.dart';
 
@@ -8,6 +9,11 @@ class AppConfig {
   /// Initialize all configurations
   static void initialize() {
     WidgetsFlutterBinding.ensureInitialized();
+
+    // Log environment info in debug mode
+    if (kDebugMode) {
+      print('AppConfig: ${EnvironmentConfig.environmentInfo}');
+    }
 
     // Web-specific configurations
     if (kIsWeb) {
